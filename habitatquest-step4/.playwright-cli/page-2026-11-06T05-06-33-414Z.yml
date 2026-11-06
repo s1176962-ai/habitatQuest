@@ -1,0 +1,124 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e11]:
+        - heading "HabitatQuest · Step 4" [level=1] [ref=e12]
+        - generic [ref=e13]: 口语练习 AI 助手 · 演示原型 · 本地运行
+      - generic "点击右下角查看网络请求清单" [ref=e14]: 本地模式 · 未发起任何外部请求
+      - button "本轮 1/8 约 ¥0.00" [ref=e24] [cursor=pointer]:
+        - generic [ref=e29]:
+          - generic [ref=e30]: 本轮 1/8
+          - generic [ref=e31]: 约 ¥0.00
+      - button "网络请求清单" [ref=e35] [cursor=pointer]
+      - button "双人练习（同桌轮流说同一张卡）" [ref=e40] [cursor=pointer]
+      - button "切换主题" [ref=e46] [cursor=pointer]
+      - button "设置" [ref=e49] [cursor=pointer]
+      - generic [ref=e53]: Step 4 · Voice Practice
+      - generic [ref=e54]: 演示原型 · 本地运行
+  - generic [ref=e55]:
+    - complementary [ref=e56]:
+      - generic [ref=e57]:
+        - generic [ref=e58]: Step 4 · Voice Practice
+        - generic [ref=e59]: 从「认读」到「口头表达」：看图 → 听示范 → 跟读 → 判分 → Why/How 追问 → 口头回答。
+      - generic [ref=e60]:
+        - generic [ref=e61]:
+          - text: 轮次进度
+          - generic [ref=e62]: 1 / 8
+        - generic [ref=e63]:
+          - generic [ref=e64]: "1"
+          - generic [ref=e65]: "2"
+          - generic [ref=e66]: "3"
+          - generic [ref=e67]: "4"
+          - generic [ref=e68]: "5"
+          - generic [ref=e69]: "6"
+          - generic [ref=e70]: "7"
+          - generic [ref=e71]: "8"
+        - generic [ref=e72]: 每会话 8 轮，对应 8 张图片卡。
+      - generic [ref=e73]:
+        - generic [ref=e74]: 卡片历史
+        - generic [ref=e75]: 完成一轮后，这里会出现缩略图。
+      - generic [ref=e76]:
+        - generic [ref=e77]: 我的进步
+        - img "score trend" [ref=e78]:
+          - generic [ref=e79]: 还没有成绩，完成第一轮就会出现曲线
+        - generic [ref=e80]: 暂无成绩
+      - generic [ref=e81]:
+        - generic [ref=e82]: 键盘快捷键
+        - generic [ref=e85]: 空格 按住录音 · Enter 提交 · Esc 关抽屉 / 跳过
+      - generic [ref=e86]: 演示原型 · 本地运行
+    - main [ref=e87]:
+      - generic [ref=e88]:
+        - button "Arctic Fox 图片卡，点击听英语发音" [ref=e90] [cursor=pointer]:
+          - img "polar-fox habitat illustration" [ref=e92]
+          - generic [ref=e127]: Tap to listen · 点击听发音
+        - generic [ref=e132]:
+          - generic [ref=e133]:
+            - generic [ref=e134]:
+              - heading "Arctic Fox · Polar Tundra" [level=2] [ref=e135]:
+                - text: Arctic Fox
+                - generic [ref=e136]: · Polar Tundra
+              - generic [ref=e137]: 北极狐 · 难度 ★☆☆ · 适应特征：thick fur
+            - button "上传图片" [ref=e139] [cursor=pointer]
+          - generic [ref=e143]:
+            - generic [ref=e144]: thick fur
+            - generic [ref=e145]: white coat
+            - generic [ref=e146]: cold tundra
+        - generic [ref=e148]:
+          - generic [ref=e149]:
+            - generic [ref=e150]: 目标句 · 逐词高亮
+            - generic [ref=e151]:
+              - button "0.75×" [ref=e152] [cursor=pointer]
+              - button "隐藏文字" [ref=e153] [cursor=pointer]
+              - button "再听一次 (2)" [disabled] [ref=e159]:
+                - text: 再听一次
+                - generic [ref=e164]: (2)
+              - button "跳过示范 → 录音" [ref=e165] [cursor=pointer]
+          - generic [ref=e166]:
+            - generic [ref=e167]: This
+            - generic [ref=e168]: is
+            - generic [ref=e169]: an
+            - generic [ref=e170]: arctic
+            - generic [ref=e171]: fox.
+            - generic [ref=e172]: It
+            - generic [ref=e173]: lives
+            - generic [ref=e174]: "on"
+            - generic [ref=e175]: the
+            - generic [ref=e176]: cold
+            - generic [ref=e177]: tundra.
+            - generic [ref=e178]: It
+            - generic [ref=e179]: has
+            - generic [ref=e180]: thick
+            - generic [ref=e181]: fur
+            - generic [ref=e182]: and
+            - generic [ref=e183]: a
+            - generic [ref=e184]: white
+            - generic [ref=e185]: coat
+            - generic [ref=e186]: to
+            - generic [ref=e187]: hide
+            - generic [ref=e188]: in
+            - generic [ref=e189]: the
+            - generic [ref=e190]: snow.
+          - generic [ref=e191]: 点击上方图片卡，听 AI 用英语读出这句话
+      - generic [ref=e192]: 流程：点击图片听示范 → 按住空格跟读 → 出分与逐词诊断 → Pip 用 Why/How 追问 → 口头回答 → 小结。
+    - complementary [ref=e195]:
+      - generic [ref=e196]:
+        - generic [ref=e197]: 本轮评分
+        - generic [ref=e198]:
+          - text: 完成跟读后，这里会出现分数环、三个子维度和逐词诊断。
+          - generic [ref=e199]: 当前阶段：card
+      - generic [ref=e200]:
+        - generic [ref=e201]: 逐词诊断
+        - generic [ref=e202]: 等待跟读结果…
+      - generic [ref=e203]:
+        - generic [ref=e204]: 句型支架
+        - generic [ref=e207]:
+          - generic [ref=e208]: It needs ... because ...
+          - generic [ref=e209]: It can ... so that ...
+          - generic [ref=e210]: If the habitat were ..., it would ...
+          - generic [ref=e211]: This helps it to ... when ...
+        - generic [ref=e212]: 脚手架只给句型，不替你作答 —— 真实信息差才能练出表达。
+  - generic [ref=e213]:
+    - button "网络请求清单 0 条" [ref=e214] [cursor=pointer]:
+      - generic [ref=e217]: 网络请求清单
+      - generic [ref=e218]: 0 条
+    - generic [ref=e221]: 本地模式 · 未发起任何外部请求

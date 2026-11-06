@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 320" width="420" height="320" role="img" aria-label="ocean-turtle habitat illustration">
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#8fd3d8"/><stop offset="1" stop-color="#0e5570"/>
+  </linearGradient>
+  
+  <linearGradient id="vig" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".10"/>
+  </linearGradient>
+</defs>
+<rect width="420" height="320" fill="url(#sky)"/>
+<polygon points="80,0 130,0 210,320 130,320" fill="#c9f2ee" opacity=".10"/>
+<polygon points="230,0 268,0 340,320 268,320" fill="#c9f2ee" opacity=".08"/>
+<g transform="translate(70 108) scale(1)" opacity=".22" fill="#063f56"><ellipse cx="0" cy="0" rx="16" ry="8" fill="#063f56" /><polygon points="-14,0 -26,-9 -26,9" fill="#063f56" /><circle cx="7" cy="-2" r="1.6" fill="#eafafa" /></g>
+<g transform="translate(330 88) scale(0.8)" opacity=".22" fill="#063f56"><ellipse cx="0" cy="0" rx="16" ry="8" fill="#063f56" /><polygon points="-14,0 -26,-9 -26,9" fill="#063f56" /><circle cx="7" cy="-2" r="1.6" fill="#eafafa" /></g>
+<g transform="translate(366 150) scale(0.6)" opacity=".22" fill="#063f56"><ellipse cx="0" cy="0" rx="16" ry="8" fill="#063f56" /><polygon points="-14,0 -26,-9 -26,9" fill="#063f56" /><circle cx="7" cy="-2" r="1.6" fill="#eafafa" /></g>
+<g transform="translate(48 182) scale(0.55)" opacity=".22" fill="#063f56"><ellipse cx="0" cy="0" rx="16" ry="8" fill="#063f56" /><polygon points="-14,0 -26,-9 -26,9" fill="#063f56" /><circle cx="7" cy="-2" r="1.6" fill="#eafafa" /></g>
+<path d="M0 262 Q100 246 210 260 Q320 274 420 254 L420 320 L0 320 Z" fill="#e9d9a9" />
+<path d="M0 276 Q120 262 230 278 Q330 290 420 272 L420 320 L0 320 Z" fill="#dcc38d" />
+<circle cx="44" cy="210" r="4" fill="none" stroke="#d9f7f4" stroke-width="1.5" opacity=".55"/>
+<circle cx="58" cy="178" r="2.5" fill="none" stroke="#d9f7f4" stroke-width="1.5" opacity=".55"/>
+<circle cx="372" cy="196" r="3.5" fill="none" stroke="#d9f7f4" stroke-width="1.5" opacity=".55"/>
+<circle cx="386" cy="158" r="2" fill="none" stroke="#d9f7f4" stroke-width="1.5" opacity=".55"/>
+<circle cx="340" cy="228" r="2.2" fill="none" stroke="#d9f7f4" stroke-width="1.5" opacity=".55"/>
+<g><g transform="translate(210 182)"><path d="M-48 -18 Q-102 -44 -88 -8 Q-80 8 -52 12 Z" fill="#5f9f86" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><path d="M-48 20 Q-100 46 -86 60 Q-68 62 -44 34 Z" fill="#5f9f86" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><path d="M48 -18 Q102 -44 88 -8 Q80 8 52 12 Z" fill="#5f9f86" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><path d="M48 20 Q100 46 86 60 Q68 62 44 34 Z" fill="#5f9f86" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><ellipse cx="72" cy="-4" rx="26" ry="21" fill="#76b394" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><circle cx="84" cy="-9" r="3.2" fill="#2f2a26" /><circle cx="85" cy="-10" r="1" fill="#fff" /><ellipse cx="0" cy="4" rx="62" ry="48" fill="#3f8b70" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><ellipse cx="0" cy="2" rx="54" ry="41" fill="#57a684" /><path d="M-24 -25 L-11 -12 L-24 1 L-37 -12 Z" fill="#3c8067" stroke="#a9d6bd" stroke-width="1.6" fill-opacity=".65"/><path d="M12 -30 L26 -16 L12 -2 L-2 -16 Z" fill="#3c8067" stroke="#a9d6bd" stroke-width="1.6" fill-opacity=".65"/><path d="M-30 4 L-18 16 L-30 28 L-42 16 Z" fill="#3c8067" stroke="#a9d6bd" stroke-width="1.6" fill-opacity=".65"/><path d="M8 6 L22 20 L8 34 L-6 20 Z" fill="#3c8067" stroke="#a9d6bd" stroke-width="1.6" fill-opacity=".65"/><path d="M36 -5 L47 6 L36 17 L25 6 Z" fill="#3c8067" stroke="#a9d6bd" stroke-width="1.6" fill-opacity=".65"/></g></g>
+<path d="M24 300 Q10 269.0 28 238 Q42 269.0 32 300 Z" fill="#2b7f78" opacity=".85"/>
+<path d="M40 300 Q26 278.0 44 256 Q58 278.0 48 300 Z" fill="#3b978a" opacity=".85"/>
+<path d="M392 300 Q378 265.0 396 230 Q410 265.0 400 300 Z" fill="#2b7f78" opacity=".85"/>
+<path d="M378 300 Q364 276.0 382 252 Q396 276.0 386 300 Z" fill="#3b978a" opacity=".85"/>
+<rect width="420" height="320" fill="url(#vig)" pointer-events="none"/>
+</svg>

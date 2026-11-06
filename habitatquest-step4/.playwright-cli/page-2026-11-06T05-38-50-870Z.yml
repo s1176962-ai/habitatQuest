@@ -1,0 +1,148 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e11]:
+        - heading "HabitatQuest · Step 4" [level=1] [ref=e12]
+        - generic [ref=e13]: 口语练习 AI 助手 · 演示原型 · 本地运行
+      - generic "点击右下角查看网络请求清单" [ref=e14]: 本地模式 · 未发起任何外部请求
+      - button "本轮 1/8 约 ¥0.00" [ref=e24] [cursor=pointer]:
+        - generic [ref=e29]:
+          - generic [ref=e30]: 本轮 1/8
+          - generic [ref=e31]: 约 ¥0.00
+      - button "网络请求清单" [ref=e35] [cursor=pointer]
+      - button "切换侧栏" [ref=e40] [cursor=pointer]
+      - button "双人练习（同桌轮流说同一张卡）" [ref=e44] [cursor=pointer]
+      - button "切换主题" [ref=e50] [cursor=pointer]
+      - button "设置" [ref=e53] [cursor=pointer]
+      - generic [ref=e57]: Step 4 · Voice Practice
+      - generic [ref=e58]: 演示原型 · 本地运行
+  - generic [ref=e59]:
+    - complementary [ref=e60]:
+      - generic [ref=e61]:
+        - generic [ref=e62]: Step 4 · Voice Practice
+        - generic [ref=e63]: 从「认读」到「口头表达」：看图 → 听示范 → 跟读 → 判分 → Why/How 追问 → 口头回答。
+      - generic [ref=e64]:
+        - generic [ref=e65]:
+          - text: 轮次进度
+          - generic [ref=e66]: 1 / 8
+        - generic [ref=e67]:
+          - generic [ref=e68]: "1"
+          - generic [ref=e69]: "2"
+          - generic [ref=e70]: "3"
+          - generic [ref=e71]: "4"
+          - generic [ref=e72]: "5"
+          - generic [ref=e73]: "6"
+          - generic [ref=e74]: "7"
+          - generic [ref=e75]: "8"
+        - generic [ref=e76]: 每会话 8 轮，对应 8 张图片卡。
+      - generic [ref=e77]:
+        - generic [ref=e78]: 卡片历史
+        - generic [ref=e79]: 完成一轮后，这里会出现缩略图。
+      - generic [ref=e80]:
+        - generic [ref=e81]: 我的进步
+        - img "score trend" [ref=e82]:
+          - generic [ref=e83]: 还没有成绩，完成第一轮就会出现曲线
+        - generic [ref=e84]: 暂无成绩
+      - generic [ref=e85]:
+        - generic [ref=e86]: 键盘快捷键
+        - generic [ref=e89]: 空格 按住录音 · Enter 提交 · Esc 关抽屉 / 跳过
+      - generic [ref=e90]: 演示原型 · 本地运行
+    - main [ref=e91]:
+      - generic "本轮进度与下一步" [ref=e92]:
+        - generic [ref=e93]:
+          - generic [ref=e94]: 第 1 / 8 关
+          - generic [ref=e95]:
+            - generic [ref=e96]:
+              - generic [ref=e97]: "1"
+              - text: 听示范
+            - generic [ref=e98]: ›
+            - generic [ref=e99]:
+              - generic [ref=e100]: "2"
+              - text: 跟读录音
+            - generic [ref=e101]: ›
+            - generic [ref=e102]:
+              - generic [ref=e103]: "3"
+              - text: 看发音分
+            - generic [ref=e104]: ›
+            - generic [ref=e105]:
+              - generic [ref=e106]: "4"
+              - text: 回答 Why/How
+            - generic [ref=e107]: ›
+            - generic [ref=e108]:
+              - generic [ref=e109]: "5"
+              - text: 小结 · 下一关
+        - generic [ref=e110]: 下一步：点下面那个大按钮（或直接点图片卡）听英语示范，然后就能开始录音。
+      - generic [ref=e114]:
+        - button "Arctic Fox 图片卡，点击听英语发音" [ref=e116] [cursor=pointer]:
+          - img "polar-fox habitat illustration" [ref=e118]
+          - generic [ref=e153]: Tap to listen · 点击听发音
+        - generic [ref=e158]:
+          - generic [ref=e159]:
+            - generic [ref=e160]:
+              - heading "Arctic Fox · Polar Tundra" [level=2] [ref=e161]:
+                - text: Arctic Fox
+                - generic [ref=e162]: · Polar Tundra
+              - generic [ref=e163]: 北极狐 · 难度 ★☆☆ · 适应特征：thick fur
+            - button "上传图片" [ref=e165] [cursor=pointer]
+          - generic [ref=e169]:
+            - generic [ref=e170]: thick fur
+            - generic [ref=e171]: white coat
+            - generic [ref=e172]: cold tundra
+        - generic [ref=e174]:
+          - generic [ref=e175]:
+            - generic [ref=e176]: 目标句 · 逐词高亮
+            - generic [ref=e177]:
+              - button "0.75×" [ref=e178] [cursor=pointer]
+              - button "隐藏文字" [ref=e179] [cursor=pointer]
+              - button "再听一次 (2)" [disabled] [ref=e185]:
+                - text: 再听一次
+                - generic [ref=e190]: (2)
+          - generic [ref=e191]:
+            - generic [ref=e192]: This
+            - generic [ref=e193]: is
+            - generic [ref=e194]: an
+            - generic [ref=e195]: arctic
+            - generic [ref=e196]: fox.
+            - generic [ref=e197]: It
+            - generic [ref=e198]: lives
+            - generic [ref=e199]: "on"
+            - generic [ref=e200]: the
+            - generic [ref=e201]: cold
+            - generic [ref=e202]: tundra.
+            - generic [ref=e203]: It
+            - generic [ref=e204]: has
+            - generic [ref=e205]: thick
+            - generic [ref=e206]: fur
+            - generic [ref=e207]: and
+            - generic [ref=e208]: a
+            - generic [ref=e209]: white
+            - generic [ref=e210]: coat
+            - generic [ref=e211]: to
+            - generic [ref=e212]: hide
+            - generic [ref=e213]: in
+            - generic [ref=e214]: the
+            - generic [ref=e215]: snow.
+          - generic [ref=e216]:
+            - button "① 听英语示范，开始这一关" [ref=e217] [cursor=pointer]
+            - button "跳过示范，直接录音 →" [ref=e222] [cursor=pointer]
+            - generic [ref=e223]: 也可以直接点击上方图片卡
+    - complementary [ref=e224]:
+      - generic [ref=e225]:
+        - generic [ref=e226]: 本轮评分
+        - generic [ref=e227]:
+          - text: 完成跟读后，这里会出现分数环、三个子维度和逐词诊断。
+          - generic [ref=e228]: 当前阶段：card
+      - generic [ref=e229]:
+        - generic [ref=e230]: 逐词诊断
+        - generic [ref=e231]: 等待跟读结果…
+      - generic [ref=e232]:
+        - generic [ref=e233]: 句型支架
+        - generic [ref=e236]:
+          - generic [ref=e237]: It needs ... because ...
+          - generic [ref=e238]: It can ... so that ...
+          - generic [ref=e239]: If the habitat were ..., it would ...
+          - generic [ref=e240]: This helps it to ... when ...
+        - generic [ref=e241]: 脚手架只给句型，不替你作答 —— 真实信息差才能练出表达。
+  - button "展开网络请求清单" [ref=e242] [cursor=pointer]:
+    - generic [ref=e245]: 网络请求
+    - generic [ref=e246]: 0 条

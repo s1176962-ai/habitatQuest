@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 320" width="420" height="320" role="img" aria-label="wetland-heron habitat illustration">
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#cfe3d5"/><stop offset="1" stop-color="#eef6ea"/>
+  </linearGradient>
+  <radialGradient id="glow"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <linearGradient id="vig" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".10"/>
+  </linearGradient>
+</defs>
+<rect width="420" height="320" fill="url(#sky)"/>
+<circle cx="340" cy="56" r="26" fill="#fdf8dc" opacity=".8"/>
+<path d="M0 176 Q110 166 210 178 Q320 190 420 170 L420 320 L0 320 Z" fill="#a8c6ac" />
+<path d="M0 220 Q110 210 210 222 Q320 234 420 214 L420 320 L0 320 Z" fill="#79a99b" />
+<path d="M0 252 Q120 242 230 256 Q330 268 420 246 L420 320 L0 320 Z" fill="#6b9c94" />
+<path d="M28 250 Q24 208.0 30 166 Q33 208.0 36 250 Z" fill="#5f8a5c" />
+<rect x="27" y="152" width="6" height="16" fill="#9b7448" rx="3"/>
+<path d="M44 250 Q40 217.0 46 184 Q49 217.0 52 250 Z" fill="#5f8a5c" />
+<path d="M378 250 Q374 204.0 380 158 Q383 204.0 386 250 Z" fill="#5f8a5c" />
+<rect x="377" y="144" width="6" height="16" fill="#9b7448" rx="3"/>
+<path d="M396 250 Q392 215.0 398 180 Q401 215.0 404 250 Z" fill="#5f8a5c" />
+<path d="M58 250 Q54 223.0 60 196 Q63 223.0 66 250 Z" fill="#5f8a5c" />
+<path d="M90 268 q16 -5 32 0" fill="none" stroke="#dcefe6" stroke-width="2" opacity=".55" stroke-linecap="round"/>
+<path d="M180 284 q16 -5 32 0" fill="none" stroke="#dcefe6" stroke-width="2" opacity=".55" stroke-linecap="round"/>
+<path d="M300 272 q16 -5 32 0" fill="none" stroke="#dcefe6" stroke-width="2" opacity=".55" stroke-linecap="round"/>
+<g><g transform="translate(210 168)"><path d="M-8 100 l-4 56 m20 -56 l6 56" fill="none" stroke="#9a7d55" stroke-width="5" stroke-linecap="round"/><path d="M-12 156 l-12 6 m12 -6 l10 6 m12 -6 l-10 6 m10 -6 l12 6" fill="none" stroke="#9a7d55" stroke-width="3" stroke-linecap="round"/><ellipse cx="0" cy="84" rx="44" ry="34" fill="#8fa5b4" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><path d="M32 78 Q60 76 62 98 Q44 104 26 96 Z" fill="#7892a4" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><path d="M-6 62 Q-24 30 -12 -2 L10 -2 Q22 30 12 66 Z" fill="#9fb4c1" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><ellipse cx="0" cy="-14" rx="22" ry="19" fill="#b4c5cf" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><path d="M16 -16 L62 -8 L16 0 Z" fill="#e0b45e" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><circle cx="4" cy="-20" r="4" fill="#2f2a26" /><circle cx="5.2" cy="-21" r="1.2" fill="#fff" /><path d="M-10 -28 q-14 -10 -22 -4" fill="none" stroke="#b4c5cf" stroke-width="4" stroke-linecap="round"/><path d="M-16 78 q10 8 20 0" fill="none" stroke="#6f8798" stroke-width="2" opacity=".6"/><path d="M0 88 q10 8 20 0" fill="none" stroke="#6f8798" stroke-width="2" opacity=".6"/><path d="M16 80 q10 8 20 0" fill="none" stroke="#6f8798" stroke-width="2" opacity=".6"/></g></g>
+<g transform="translate(70 282) scale(1)"><path d="M0 0 A22 12 0 1 1 -22 -10 L0 -3 Z" fill="#5f9a6a" /></g>
+<g transform="translate(352 292) scale(0.8)"><path d="M0 0 A22 12 0 1 1 -22 -10 L0 -3 Z" fill="#5f9a6a" /></g>
+<g transform="translate(130 302) scale(0.7)"><path d="M0 0 A22 12 0 1 1 -22 -10 L0 -3 Z" fill="#5f9a6a" /></g>
+<rect width="420" height="320" fill="url(#vig)" pointer-events="none"/>
+</svg>

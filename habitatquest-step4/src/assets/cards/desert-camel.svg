@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 320" width="420" height="320" role="img" aria-label="desert-camel habitat illustration">
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f7cf94"/><stop offset="1" stop-color="#fdf1d6"/>
+  </linearGradient>
+  
+  <linearGradient id="vig" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".10"/>
+  </linearGradient>
+</defs>
+<rect width="420" height="320" fill="url(#sky)"/>
+<circle cx="330" cy="62" r="34" fill="#fff3cf" />
+<circle cx="330" cy="62" r="46" fill="#ffedb8" opacity=".35"/>
+<path d="M0 198 Q90 164 190 196 Q290 226 420 182 L420 320 L0 320 Z" fill="#eec48c" />
+<path d="M0 232 Q120 206 220 234 Q330 262 420 226 L420 320 L0 320 Z" fill="#e3ae73" />
+<path d="M0 272 Q130 250 240 274 Q340 294 420 266 L420 320 L0 320 Z" fill="#d99a5f" />
+<g transform="translate(64 176)"><rect x="-8" y="0" width="16" height="74" fill="#6f9a6a" rx="8"/><path d="M-8 40 Q-30 40 -30 22 L-22 22 Q-22 30 -8 30 Z" fill="#6f9a6a" /><path d="M8 30 Q28 30 28 12 L20 12 Q20 22 8 22 Z" fill="#6f9a6a" /></g>
+<g transform="translate(366 196) scale(.7)"><rect x="-8" y="0" width="16" height="62" fill="#7ba573" rx="8"/><path d="M8 28 Q26 28 26 12 L18 12 Q18 20 8 20 Z" fill="#7ba573" /></g>
+<g><g transform="translate(210 176)"><rect x="-48" y="60" width="12" height="66" fill="#d2a368" rx="5" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><ellipse cx="-42" cy="128" rx="11" ry="6" fill="#b9874f" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><rect x="-28" y="60" width="12" height="66" fill="#d2a368" rx="5" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><ellipse cx="-22" cy="128" rx="11" ry="6" fill="#b9874f" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><rect x="16" y="60" width="12" height="66" fill="#d2a368" rx="5" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><ellipse cx="22" cy="128" rx="11" ry="6" fill="#b9874f" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><rect x="36" y="60" width="12" height="66" fill="#d2a368" rx="5" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><ellipse cx="42" cy="128" rx="11" ry="6" fill="#b9874f" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><ellipse cx="0" cy="52" rx="68" ry="36" fill="#dfb277" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><path d="M-56 40 Q-42 -6 -26 40 Z" fill="#dfb277" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><path d="M-2 40 Q14 -8 30 40 Z" fill="#dfb277" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><path d="M52 46 Q66 8 62 -40 L86 -38 Q88 12 70 54 Z" fill="#dfb277" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><ellipse cx="78" cy="-48" rx="26" ry="17" fill="#e7bd85" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><path d="M96 -48 Q112 -44 106 -30 L88 -32 Z" fill="#e7bd85" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><circle cx="80" cy="-54" r="3.4" fill="#3a3430" /><path d="M-64 48 q-12 18 -4 34" fill="none" stroke="#c9975c" stroke-width="7" stroke-linecap="round"/></g></g>
+<ellipse cx="38" cy="292" rx="9" ry="3" fill="#c98b53" opacity=".55"/>
+<ellipse cx="112" cy="302" rx="9" ry="3" fill="#c98b53" opacity=".55"/>
+<ellipse cx="300" cy="292" rx="9" ry="3" fill="#c98b53" opacity=".55"/>
+<ellipse cx="388" cy="306" rx="9" ry="3" fill="#c98b53" opacity=".55"/>
+<rect width="420" height="320" fill="url(#vig)" pointer-events="none"/>
+</svg>

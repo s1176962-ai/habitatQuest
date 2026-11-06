@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 320" width="420" height="320" role="img" aria-label="savanna-giraffe habitat illustration">
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f5cf8f"/><stop offset="1" stop-color="#fbf0d3"/>
+  </linearGradient>
+  
+  <linearGradient id="vig" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".10"/>
+  </linearGradient>
+</defs>
+<rect width="420" height="320" fill="url(#sky)"/>
+<circle cx="318" cy="76" r="40" fill="#fff0c4" />
+<circle cx="318" cy="76" r="54" fill="#ffe9ae" opacity=".3"/>
+<path d="M0 206 Q100 188 200 206 Q310 226 420 198 L420 320 L0 320 Z" fill="#d9c17f" />
+<path d="M0 238 Q120 220 230 240 Q330 258 420 232 L420 320 L0 320 Z" fill="#cbb069" />
+<g transform="translate(66 130)"><rect x="-5" y="40" width="10" height="88" fill="#7a6242" rx="3"/><path d="M-4 62 L-38 46 M4 58 L40 42" fill="none" stroke="#7a6242" stroke-width="6" stroke-linecap="round"/><ellipse cx="0" cy="30" rx="56" ry="17" fill="#7f9460" /><ellipse cx="-26" cy="24" rx="26" ry="11" fill="#8fa26b" /><ellipse cx="28" cy="22" rx="26" ry="11" fill="#8fa26b" /></g>
+<path d="M250 208 Q300 178 356 208 Z" fill="#c3a86b" opacity=".6"/>
+<g><g transform="translate(204 172)"><rect x="-40" y="84" width="12" height="62" fill="#e8bd70" rx="4" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><ellipse cx="-34" cy="146" rx="10" ry="5" fill="#b98b45" /><rect x="-20" y="84" width="12" height="62" fill="#e8bd70" rx="4" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><ellipse cx="-14" cy="146" rx="10" ry="5" fill="#b98b45" /><rect x="12" y="84" width="12" height="62" fill="#e8bd70" rx="4" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><ellipse cx="18" cy="146" rx="10" ry="5" fill="#b98b45" /><rect x="32" y="84" width="12" height="62" fill="#e8bd70" rx="4" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><ellipse cx="38" cy="146" rx="10" ry="5" fill="#b98b45" /><ellipse cx="0" cy="78" rx="56" ry="34" fill="#f0c878" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><path d="M-40 62 Q-58 42 -52 26 L-40 28 Q-44 44 -32 58 Z" fill="#e8bd70" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><rect x="24" y="-68" width="26" height="118" fill="#f0c878" rx="12" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><ellipse cx="44" cy="-70" rx="24" ry="15" fill="#f4d08a" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><path d="M30 -82 l-3 -18 m16 18 l3 -18" fill="none" stroke="#c99b4d" stroke-width="4" stroke-linecap="round"/><circle cx="27" cy="-86" r="4.5" fill="#b98b45" /><circle cx="51" cy="-86" r="4.5" fill="#b98b45" /><path d="M60 -70 q12 2 12 10 l-12 4 Z" fill="#f4d08a" stroke="#2f2a26" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"/><circle cx="47" cy="-74" r="3.4" fill="#3a3430" /><path d="M-42 70 l8 -7.2 l8 7.2 l-8 8 Z" fill="#c9934c" opacity=".85"/><path d="M-21 84 l9 -8.1 l9 8.1 l-9 9 Z" fill="#c9934c" opacity=".85"/><path d="M4 68 l8 -7.2 l8 7.2 l-8 8 Z" fill="#c9934c" opacity=".85"/><path d="M27 84 l7 -6.3 l7 6.3 l-7 7 Z" fill="#c9934c" opacity=".85"/><path d="M-10 58 l6 -5.4 l6 5.4 l-6 6 Z" fill="#c9934c" opacity=".85"/><path d="M23 20 l7 -6.3 l7 6.3 l-7 7 Z" fill="#c9934c" opacity=".85"/><path d="M32 0 l6 -5.4 l6 5.4 l-6 6 Z" fill="#c9934c" opacity=".85"/><path d="M26 -30 l6 -5.4 l6 5.4 l-6 6 Z" fill="#c9934c" opacity=".85"/><path d="M35 -50 l5 -4.5 l5 4.5 l-5 5 Z" fill="#c9934c" opacity=".85"/></g></g>
+<path d="M24 300 Q14 280 22 270 Q27 284 30 300 Z" fill="#a99a58" opacity=".8"/>
+<path d="M128 300 Q118 284.0 126 276.0 Q131 287.2 134 300 Z" fill="#a99a58" opacity=".8"/>
+<path d="M196 300 Q186 278.0 194 267.0 Q199 282.4 202 300 Z" fill="#a99a58" opacity=".8"/>
+<path d="M286 300 Q276 282.0 284 273.0 Q289 285.6 292 300 Z" fill="#a99a58" opacity=".8"/>
+<path d="M352 300 Q342 278.0 350 267.0 Q355 282.4 358 300 Z" fill="#a99a58" opacity=".8"/>
+<path d="M404 300 Q394 284.0 402 276.0 Q407 287.2 410 300 Z" fill="#a99a58" opacity=".8"/>
+<rect width="420" height="320" fill="url(#vig)" pointer-events="none"/>
+</svg>
