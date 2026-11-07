@@ -46,11 +46,12 @@ export const DEFAULT_PRICES: Prices = {
   imageEach: 0.28,
 };
 
+/** `label` / the Gemini ttsModel are i18n keys, resolved with tr() in the UI. */
 export const PROVIDER_PRESETS: Record<Exclude<ProviderId, 'local'>, {
   label: string; baseUrl: string; model: string; ttsModel: string; ttsVoice: string; sttModel: string;
 }> = {
   'openai-compatible': {
-    label: 'OpenAI 兼容',
+    label: 'set.preset.openai',
     baseUrl: 'https://api.openai.com/v1',
     model: 'gpt-4o-mini',
     ttsModel: 'gpt-4o-mini-tts',
@@ -58,15 +59,18 @@ export const PROVIDER_PRESETS: Record<Exclude<ProviderId, 'local'>, {
     sttModel: 'gpt-4o-mini-transcribe',
   },
   gemini: {
-    label: 'Gemini',
+    label: 'set.preset.gemini',
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
     model: 'gemini-2.0-flash',
-    ttsModel: '(浏览器内置语音)',
+    // Technical field: Gemini TTS uses the browser voice, so this value is
+    // never sent to a provider. Kept readable rather than an i18n key so a
+    // language switch cannot corrupt what the user typed into the input.
+    ttsModel: '(built-in browser voice)',
     ttsVoice: 'default',
     sttModel: 'gemini-2.0-flash',
   },
   custom: {
-    label: '自定义',
+    label: 'set.preset.custom',
     baseUrl: 'https://api.openai.com/v1',
     model: 'gpt-4o-mini',
     ttsModel: 'gpt-4o-mini-tts',
@@ -90,6 +94,7 @@ export const DEFAULT_CONFIG: Config = {
   noSaveAudio: true,
   duo: false,
   theme: 'light',
+  language: 'en',
   compactRails: false,
   showNetworkPanel: true,
   prices: DEFAULT_PRICES,
@@ -135,10 +140,11 @@ export function maskKey(key: string): string {
   if (key.length <= 8) return key.slice(0, 2) + '••••••••';
   return key.slice(0, 3) + '••••••••' + key.slice(-4);
 }
-export function keyLocation(): 'sessionStorage' | 'localStorage' | '未保存' {
+/** Returns an i18n key for "not saved"; the storage names stay as-is. */
+export function keyLocation(): 'sessionStorage' | 'localStorage' | 'set.keyLocation.none' {
   if (get('session', K_KEY)) return 'sessionStorage';
   if (get('local', K_KEY)) return 'localStorage';
-  return '未保存';
+  return 'set.keyLocation.none';
 }
 /** Switch storage mode without ever printing the key. */
 export function migrateKey(mode: 'session' | 'local'): void {
@@ -160,7 +166,7 @@ export function clearRecords(): void { del('local', K_RECORDS); }
 export function exportRecords(): string {
   // Explicitly record-free of any credential: only scores + config metadata.
   return JSON.stringify({
-    app: 'HabitatQuest Step 4', exportedAt: new Date().toISOString(),
+    app: 'HabitatQuest Speaking Practice', exportedAt: new Date().toISOString(),
     note: 'Local learning records only. No key, no audio, no personal data.',
     records: readRecords(),
   }, null, 2);

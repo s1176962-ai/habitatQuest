@@ -1,5 +1,5 @@
 /**
- * HabitatQuest Step 4 — optional localhost CORS relay.
+ * HabitatQuest Speaking Practice — optional localhost CORS relay.
  *
  *   HQ_TARGET_BASE_URL="https://api.openai.com/v1" \
  *   HQ_API_KEY="sk-..." \

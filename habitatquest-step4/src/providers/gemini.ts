@@ -1,4 +1,5 @@
 import type { Msg, ProviderAdapter, TTSResult, TranscriptResult } from '../types';
+import { t } from '../i18n';
 import { blobToBase64, estimateTokens, truncateToSentence } from '../lib/audio';
 import { getConfig } from '../lib/storage';
 import { LIMITS } from '../lib/quota';
@@ -39,11 +40,12 @@ function usageOf(data: unknown) {
   return u ? { prompt: u.promptTokenCount || 0, completion: u.candidatesTokenCount || 0 } : undefined;
 }
 
+/** Returns an i18n key — the request log resolves it at render time. */
 function purposeOf(messages: Msg[]): string {
   const sys = messages.find((m) => m.role === 'system')?.content || '';
-  if (sys.includes('TASK A')) return '发音判分 (Gemini)';
-  if (sys.includes('TASK B')) return '生成追问 (Gemini)';
-  return '测试连接 (Gemini)';
+  if (sys.includes('TASK A')) return 'log.purpose.scoreGemini';
+  if (sys.includes('TASK B')) return 'log.purpose.questionGemini';
+  return 'log.purpose.testGemini';
 }
 
 export const geminiProvider: ProviderAdapter = {
@@ -70,9 +72,9 @@ export const geminiProvider: ProviderAdapter = {
     const { response } = await networkRequest(
       pathFor(c.sttModel || c.model),
       { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) },
-      { purpose: '语音识别 (Gemini)', kind: 'stt', amount: 10, channel: 'api', authStyle: 'x-goog-api-key' },
+      { purpose: 'log.purpose.sttGemini', kind: 'stt', amount: 10, channel: 'api', authStyle: 'x-goog-api-key' },
     );
-    if (!response.ok) throw new NetworkError('语音识别失败，已降级到本地识别。');
+    if (!response.ok) throw new NetworkError(t('err.sttFail'));
     return { text: textOf(await response.json()).trim() };
   },
 
@@ -92,7 +94,7 @@ export const geminiProvider: ProviderAdapter = {
         authStyle: 'x-goog-api-key', timeoutMs: opts.timeoutMs ?? LIMITS.SINGLE.timeoutMs,
       },
     );
-    if (!response.ok) throw new NetworkError('模型请求失败，已降级到本地结果。');
+    if (!response.ok) throw new NetworkError(t('err.modelFail'));
     const raw = await response.json();
     const usage = usageOf(raw);
     if (usage) reportUsage(logId, usage, estimated);

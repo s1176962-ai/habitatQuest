@@ -1,14 +1,16 @@
 import type { Msg, ProviderAdapter, ProviderId, TTSResult, TranscriptResult, WordTiming } from '../types';
+import { t } from '../i18n';
 import { blobToBase64, estimateTokens, truncateToSentence } from '../lib/audio';
 import { getConfig } from '../lib/storage';
 import { LIMITS } from '../lib/quota';
 import { NetworkError, networkRequest, reportUsage } from '../lib/network';
 
+/** Returns an i18n key — the request log resolves it at render time. */
 function chatPurpose(messages: Msg[]): string {
   const sys = messages.find((m) => m.role === 'system')?.content || '';
-  if (sys.includes('TASK A')) return '发音判分 (LLM refinement)';
-  if (sys.includes('TASK B')) return '生成 Why/How 追问';
-  return '测试连接';
+  if (sys.includes('TASK A')) return 'log.purpose.scoreLlm';
+  if (sys.includes('TASK B')) return 'log.purpose.question';
+  return 'log.purpose.test';
 }
 
 function b64ToObjectUrl(b64: string, mime = 'image/png'): string {
@@ -36,11 +38,11 @@ export function createOpenAICompatible(id: ProviderId = 'openai-compatible'): Pr
       const { response } = await networkRequest(
         'audio/speech',
         { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) },
-        { purpose: 'TTS 示范', kind: 'tts', amount: safe.length, channel: 'api', timeoutMs: LIMITS.SINGLE.timeoutMs },
+        { purpose: 'log.purpose.tts', kind: 'tts', amount: safe.length, channel: 'api', timeoutMs: LIMITS.SINGLE.timeoutMs },
       );
-      if (!response.ok) throw new NetworkError('语音合成失败，已降级到浏览器朗读。');
+      if (!response.ok) throw new NetworkError(t('err.ttsFail'));
       const blob = await response.blob();
-      if (!blob.size) throw new NetworkError('语音合成为空，已降级到浏览器朗读。');
+      if (!blob.size) throw new NetworkError(t('err.ttsEmpty'));
       return { mode: 'audio', text: safe, rate: opts.rate, audioUrl: URL.createObjectURL(blob) };
     },
 
@@ -55,9 +57,9 @@ export function createOpenAICompatible(id: ProviderId = 'openai-compatible'): Pr
       const { response } = await networkRequest(
         'audio/transcriptions',
         { method: 'POST', body: fd },
-        { purpose: '语音识别 (STT)', kind: 'stt', amount: 10, channel: 'api', timeoutMs: LIMITS.SINGLE.timeoutMs },
+        { purpose: 'log.purpose.stt', kind: 'stt', amount: 10, channel: 'api', timeoutMs: LIMITS.SINGLE.timeoutMs },
       );
-      if (!response.ok) throw new NetworkError('语音识别失败，已降级到本地识别。');
+      if (!response.ok) throw new NetworkError(t('err.sttFail'));
       const data = await response.json() as {
         text?: string;
         words?: { word: string; start: number; end: number }[];
@@ -87,7 +89,7 @@ export function createOpenAICompatible(id: ProviderId = 'openai-compatible'): Pr
           authStyle: isGeminiLike ? 'x-goog-api-key' : 'bearer',
         },
       );
-      if (!response.ok) throw new NetworkError('模型请求失败，已降级到本地结果。');
+      if (!response.ok) throw new NetworkError(t('err.modelFail'));
       const data = await response.json() as {
         choices?: { message?: { content?: string } }[];
         usage?: { prompt_tokens?: number; completion_tokens?: number };
@@ -112,12 +114,12 @@ export function createOpenAICompatible(id: ProviderId = 'openai-compatible'): Pr
       const { response } = await networkRequest(
         'images/generations',
         { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) },
-        { purpose: '生成图片卡', kind: 'image', amount: 1, channel: 'api', timeoutMs: 30000 },
+        { purpose: 'log.purpose.image', kind: 'image', amount: 1, channel: 'api', timeoutMs: 30000 },
       );
-      if (!response.ok) throw new NetworkError('图片生成失败，已回落到本地插画。');
+      if (!response.ok) throw new NetworkError(t('err.imageFail'));
       const data = await response.json() as { data?: { b64_json?: string }[] };
       const b64 = data.data?.[0]?.b64_json;
-      if (!b64) throw new NetworkError('图片生成未返回本地可用数据，已回落到本地插画。');
+      if (!b64) throw new NetworkError(t('err.imageEmpty'));
       return b64ToObjectUrl(b64);
     },
   };

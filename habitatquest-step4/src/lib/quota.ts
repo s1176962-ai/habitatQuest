@@ -1,4 +1,5 @@
-import type { Channel, QuotaState } from '../types';
+import type { Channel, I18nVars, QuotaState } from '../types';
+import { t } from '../i18n';
 import { getConfig } from './storage';
 
 /**
@@ -25,9 +26,11 @@ export type QuotaKind =
   | 'tts' | 'stt' | 'chat' | 'image'
   | 'relisten' | 'reRecord' | 'scoring' | 'question' | 'answerScoring';
 
+/** Values are i18n keys so quota reasons follow the active UI language. */
 const KIND_LABEL: Record<QuotaKind, string> = {
-  tts: '语音合成', stt: '语音识别', chat: '模型调用', image: '图片生成',
-  relisten: '重听', reRecord: '重录', scoring: '判分', question: '追问', answerScoring: '回答评价',
+  tts: 'quota.kind.tts', stt: 'quota.kind.stt', chat: 'quota.kind.chat', image: 'quota.kind.image',
+  relisten: 'quota.kind.relisten', reRecord: 'quota.kind.reRecord', scoring: 'quota.kind.scoring',
+  question: 'quota.kind.question', answerScoring: 'quota.kind.answerScoring',
 };
 
 function localDateKey(): string {
@@ -100,48 +103,56 @@ export function estimateCost(kind: QuotaKind, amount: number): number {
   }
 }
 
-export interface CheckResult { ok: boolean; reason?: string }
+export interface CheckResult {
+  ok: boolean;
+  /** Resolved text for non-React consumers (Error messages, legacy log rows). */
+  reason?: string;
+  /** Preferred path: store the key so a language switch re-translates it. */
+  reasonKey?: string;
+  reasonVars?: I18nVars;
+}
 
-/** Called BEFORE every metered call. Returns a friendly Chinese reason on block. */
+/** Build a block result carrying both a key and the resolved current text. */
+function deny(key: string, vars?: I18nVars): CheckResult {
+  return { ok: false, reasonKey: key, reasonVars: vars, reason: t(key, vars) };
+}
+
+/** Called BEFORE every metered call. Reasons are i18n keys, not baked-in text. */
 export function precheck(kind: QuotaKind, amount: number, channel: Channel = 'api'): CheckResult {
   if (state.daily.date !== localDateKey()) { state.daily = loadDaily(); emit(false); }
 
   // Per-round interaction caps apply to BOTH channels (they shape the exercise).
   if ((kind === 'relisten' || kind === 'reRecord') && state.perRound[kind] >= LIMITS.PER_ROUND[kind]) {
-    return { ok: false, reason: `本轮「${KIND_LABEL[kind]}」已用完（上限 ${LIMITS.PER_ROUND[kind]} 次），可以继续下一步。` };
+    return deny('quota.perRoundUsed', { kind: t(KIND_LABEL[kind]), n: LIMITS.PER_ROUND[kind] });
   }
   if (kind === 'scoring' && channel === 'api' && state.perRound.scoring >= LIMITS.PER_ROUND.scoring) {
-    return { ok: false, reason: '本轮 AI 判分次数已用完（1 次）；可切换本地通道继续练习。' };
+    return deny('quota.scoreUsed');
   }
   if (kind === 'question' && channel === 'api' && state.perRound.question >= LIMITS.PER_ROUND.question) {
-    return { ok: false, reason: '本轮追问次数已用完（1 次）。' };
+    return deny('quota.questionUsed');
   }
   if (kind === 'answerScoring' && channel === 'api' && state.perRound.answerScoring >= LIMITS.PER_ROUND.answerScoring) {
-    return { ok: false, reason: '本轮回答评价次数已用完（1 次）。' };
+    return deny('quota.answerUsed');
   }
 
   // From here on: only API channel consumes real quota. Local stays free.
   if (channel === 'local') return { ok: true };
-  if (!getConfig().baseUrl) return { ok: false, reason: '请先在设置里填写 Base URL。' };
+  if (!getConfig().baseUrl) return deny('quota.needBaseUrl');
 
   const s = state.session;
   if (kind === 'tts') {
-    if (amount > LIMITS.SINGLE.ttsChars) return { ok: false, reason: `单次 TTS 文本超过 ${LIMITS.SINGLE.ttsChars} 字符。` };
-    if (s.ttsChars + amount > LIMITS.SESSION.ttsChars) return { ok: false, reason: '本会话 TTS 字符已达 3,000 上限，可切回本地通道。' };
+    if (amount > LIMITS.SINGLE.ttsChars) return deny('quota.ttsCharsSingle', { n: LIMITS.SINGLE.ttsChars });
+    if (s.ttsChars + amount > LIMITS.SESSION.ttsChars) return deny('quota.ttsCharsSession');
   }
   if (kind === 'image' && s.images >= LIMITS.SESSION.images) {
-    return { ok: false, reason: '本会话图片生成已达 2 张上限，已回落到本地插画。' };
+    return deny('quota.imagesSession');
   }
   if (kind === 'chat') {
-    if (s.llmCalls >= LIMITS.SESSION.llmCalls) return { ok: false, reason: '本会话 LLM 调用已达 20 次上限。' };
-    if (s.tokens + amount > LIMITS.SESSION.tokens) return { ok: false, reason: '本会话估算 token 已达 12,000 上限，API 通道已停用，请切回本地通道。' };
+    if (s.llmCalls >= LIMITS.SESSION.llmCalls) return deny('quota.llmSession');
+    if (s.tokens + amount > LIMITS.SESSION.tokens) return deny('quota.tokensSession');
   }
-  if (state.daily.apiCalls >= LIMITS.DAILY.apiCalls) {
-    return { ok: false, reason: '今日 API 调用已达 60 次上限（本机按日期计）。' };
-  }
-  if (state.daily.costCny + estimateCost(kind, amount) > LIMITS.DAILY.costCny) {
-    return { ok: false, reason: '今日估算费用已达 ¥5.00 上限。' };
-  }
+  if (state.daily.apiCalls >= LIMITS.DAILY.apiCalls) return deny('quota.dailyCalls');
+  if (state.daily.costCny + estimateCost(kind, amount) > LIMITS.DAILY.costCny) return deny('quota.dailyCost');
   return { ok: true };
 }
 
@@ -200,15 +211,16 @@ export interface UsageSummary {
 /** Drives the always-visible usage meter in the top bar. */
 export function usageSummary(): UsageSummary {
   const s = state.session;
+  // Labels are i18n keys; TopBar resolves them with tr() on every render.
   const raw: UsageItem[] = [
-    { label: '对话轮数', used: state.round - 1, limit: LIMITS.MAX_ROUNDS, unit: '轮', percent: 0 },
-    { label: 'TTS 字符', used: s.ttsChars, limit: LIMITS.SESSION.ttsChars, unit: '字', percent: 0 },
-    { label: 'STT 秒数', used: Math.round(s.sttSeconds), limit: 80, unit: '秒', percent: 0 },
-    { label: 'LLM tokens', used: s.tokens, limit: LIMITS.SESSION.tokens, unit: 'tok', percent: 0 },
-    { label: 'LLM 调用', used: s.llmCalls, limit: LIMITS.SESSION.llmCalls, unit: '次', percent: 0 },
-    { label: '图片生成', used: s.images, limit: LIMITS.SESSION.images, unit: '张', percent: 0 },
-    { label: '今日调用', used: state.daily.apiCalls, limit: LIMITS.DAILY.apiCalls, unit: '次', percent: 0 },
-    { label: '今日估算', used: state.daily.costCny, limit: LIMITS.DAILY.costCny, unit: '¥', percent: 0 },
+    { label: 'usage.round', used: state.round - 1, limit: LIMITS.MAX_ROUNDS, unit: 'round', percent: 0 },
+    { label: 'usage.ttsChars', used: s.ttsChars, limit: LIMITS.SESSION.ttsChars, unit: 'chars', percent: 0 },
+    { label: 'usage.sttSeconds', used: Math.round(s.sttSeconds), limit: 80, unit: 'sec', percent: 0 },
+    { label: 'usage.llmTokens', used: s.tokens, limit: LIMITS.SESSION.tokens, unit: 'tok', percent: 0 },
+    { label: 'usage.llmCalls', used: s.llmCalls, limit: LIMITS.SESSION.llmCalls, unit: 'call', percent: 0 },
+    { label: 'usage.images', used: s.images, limit: LIMITS.SESSION.images, unit: 'image', percent: 0 },
+    { label: 'usage.todayCalls', used: state.daily.apiCalls, limit: LIMITS.DAILY.apiCalls, unit: 'call', percent: 0 },
+    { label: 'usage.todayCost', used: state.daily.costCny, limit: LIMITS.DAILY.costCny, unit: '¥', percent: 0 },
   ];
   raw.forEach((i) => { i.percent = Math.min(1, i.limit ? i.used / i.limit : 0); });
   const dominant = raw.reduce((a, b) => (b.percent > a.percent ? b : a), raw[0]);

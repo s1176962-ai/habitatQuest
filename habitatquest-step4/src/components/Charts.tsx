@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
+import { t, useI18n } from '../i18n';
 
 function reducedMotion(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -7,6 +8,7 @@ function reducedMotion(): boolean {
 
 /** Animated 0–100 score ring. Hand-drawn SVG, no chart library. */
 export function ScoreRing({ value, size = 148, caption }: { value: number; size?: number; caption?: string }) {
+  useI18n();
   const [shown, setShown] = useState(reducedMotion() ? value : 0);
   const pathRef = useRef<SVGCircleElement>(null);
   const r = 56;
@@ -26,7 +28,8 @@ export function ScoreRing({ value, size = 148, caption }: { value: number; size?
   }, [value, circumference]);
 
   const color = value >= 90 ? 'var(--ok)' : value >= 75 ? 'var(--accent)' : value >= 60 ? 'var(--warn)' : 'var(--bad)';
-  const level = value >= 90 ? 'Excellent' : value >= 75 ? 'Good job' : value >= 60 ? 'Keep going' : 'Try again';
+  const levelKey = value >= 90 ? 'score.level.excellent'
+    : value >= 75 ? 'score.level.good' : value >= 60 ? 'score.level.keep' : 'score.level.try';
 
   return (
     <div className="flex flex-col items-center">
@@ -42,7 +45,7 @@ export function ScoreRing({ value, size = 148, caption }: { value: number; size?
         </text>
         <text x="70" y="92" textAnchor="middle" fontSize="10" fill="var(--muted)">/ 100</text>
       </svg>
-      <div className="-mt-2 text-[.78rem] font-semibold" style={{ color }}>{level}</div>
+      <div className="-mt-2 text-[.78rem] font-semibold" style={{ color }}>{t(levelKey)}</div>
       {caption && <div className="text-[.68rem] muted mt-0.5">{caption}</div>}
     </div>
   );
@@ -72,6 +75,7 @@ export function DimensionBar({ label, value, weight }: { label: string; value: n
 export function ProgressLine({
   values, width = 220, height = 78, showLabels = false,
 }: { values: number[]; width?: number; height?: number; showLabels?: boolean }) {
+  useI18n();
   const pad = 10;
   const max = 100, min = 0;
   const pts = values.map((v, i) => {
@@ -103,7 +107,7 @@ export function ProgressLine({
           )}
         </g>
       ))}
-      {!pts.length && <text x={width / 2} y={height / 2} textAnchor="middle" fontSize="10" fill="var(--muted)">还没有成绩，完成第一轮就会出现曲线</text>}
+      {!pts.length && <text x={width / 2} y={height / 2} textAnchor="middle" fontSize="10" fill="var(--muted)">{t('charts.noScores')}</text>}
     </svg>
   );
 }

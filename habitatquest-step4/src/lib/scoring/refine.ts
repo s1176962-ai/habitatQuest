@@ -78,6 +78,9 @@ export function mergeScore(local: ScoreResult, llm: LLMScore): ScoreResult {
     level: levelOf(total),
     words,
     advice: llm.advice || local.advice,
+    // Model-generated advice is plain text; drop the local key fragments so
+    // renderPieces() does not override it.
+    adviceI18n: llm.advice ? undefined : local.adviceI18n,
     engine: 'api',
   };
 }

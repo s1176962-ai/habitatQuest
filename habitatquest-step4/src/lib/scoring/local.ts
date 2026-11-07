@@ -1,4 +1,5 @@
-import type { ScoreResult, WordResult, WordTiming } from '../../types';
+import type { I18nPiece, ScoreResult, WordResult, WordTiming } from '../../types';
+import { renderPieces, t } from '../../i18n';
 import { GENERIC_HINT, hintFor } from '../../mock/phonemeHints';
 
 /**
@@ -116,14 +117,14 @@ export interface LocalScoreInput {
 }
 
 export function localScore(input: LocalScoreInput): ScoreResult {
-  const t = tokenize(input.target);
-  const r = tokenize(input.transcript);
-  const ops = alignWords(t, r);
+  const targetWords = tokenize(input.target);
+  const recWords = tokenize(input.transcript);
+  const ops = alignWords(targetWords, recWords);
   const matched = ops.filter((o) => o.type === 'match').length;
   const subs = ops.filter((o) => o.type === 'sub').length;
   const missing = ops.filter((o) => o.type === 'miss').length;
   const extras = ops.filter((o) => o.type === 'extra').length;
-  const n = Math.max(1, t.length);
+  const n = Math.max(1, targetWords.length);
 
   // 1) accuracy: matched-word share (with partial credit for near matches) + recognition confidence
   const conf = clamp(input.confidence ?? 0.85, 0, 1);
@@ -136,7 +137,7 @@ export function localScore(input: LocalScoreInput): ScoreResult {
 
   // 3) fluency: WPM, long pauses, filler words
   const duration = Math.max(0.6, input.durationSec || 1);
-  const wpm = Math.round((r.length / duration) * 60);
+  const wpm = Math.round((recWords.length / duration) * 60);
   let fluency = 100;
   if (wpm < 90) fluency -= Math.min(45, (90 - wpm) * 0.5);
   else if (wpm > 150) fluency -= Math.min(35, (wpm - 150) * 0.35);
@@ -147,7 +148,7 @@ export function localScore(input: LocalScoreInput): ScoreResult {
     }
   }
   fluency -= Math.min(21, longPauses * 7);
-  const fillers = r.filter((w) => FILLERS.has(w)).length;
+  const fillers = recWords.filter((w) => FILLERS.has(w)).length;
   fluency -= Math.min(15, fillers * 5);
   fluency = clamp(fluency, 20, 100);
 
@@ -159,29 +160,35 @@ export function localScore(input: LocalScoreInput): ScoreResult {
     const w = o.t || '';
     if (o.type === 'match') return { word: w, status: 'ok' as const };
     const h = hintFor(w) || GENERIC_HINT;
-    return { word: w, status: o.type === 'sub' ? 'off' as const : 'miss' as const, ipa: h.ipa, hint: h.tip };
+    // Store the i18n key, not the resolved tip: the hint panel then follows
+    // a language switch even for a score that is already on screen.
+    return { word: w, status: o.type === 'sub' ? 'off' as const : 'miss' as const, ipa: h.ipa, hint: h.tipKey };
   });
 
   const off = words.filter((w) => w.status === 'off').map((w) => w.word);
   const miss = words.filter((w) => w.status === 'miss').map((w) => w.word);
   const extra = words.filter((w) => w.status === 'extra').map((w) => w.word);
-  let advice: string;
+  let adviceI18n: I18nPiece[];
   if (off.length || miss.length) {
     const first = off[0] || miss[0];
     const h = hintFor(first) || GENERIC_HINT;
-    advice = `试试把 "${first}" 的 ${h.ipa} 读清楚`;
-    if (miss.length) advice += `；另外 "${miss.slice(0, 2).join('"、"')}" 漏读了`;
-    advice += '。';
+    adviceI18n = [{ key: 'score.advice.focus', vars: { ipa: h.ipa, word: first } }];
+    if (miss.length) {
+      adviceI18n.push({ key: 'score.advice.missed', vars: { words: miss.slice(0, 2).join(t('score.advice.joinSep')) } });
+    }
+    adviceI18n.push({ key: 'score.advice.period' });
   } else if (extra.length) {
-    advice = `读得很完整！注意别多加 "${extra[0]}"，句子会更自然。`;
+    adviceI18n = [{ key: 'score.advice.extra', vars: { word: extra[0] } }];
   } else {
-    advice = '读得很完整！可以再注意语速和连读，让句子更自然。';
+    adviceI18n = [{ key: 'score.advice.perfect' }];
   }
 
   return {
     total, accuracy: Math.round(accuracy), fluency: Math.round(fluency),
     completeness: Math.round(completeness), level: levelOf(total), words,
-    transcript: input.transcript.trim(), advice, engine: 'local', wpm,
+    transcript: input.transcript.trim(),
+    advice: renderPieces(adviceI18n), adviceI18n,
+    engine: 'local', wpm,
     durationSec: Math.round(duration * 10) / 10,
   };
 }

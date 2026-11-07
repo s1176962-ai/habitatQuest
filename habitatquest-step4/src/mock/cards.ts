@@ -1,4 +1,4 @@
-import type { CardData, HabitatId } from '../types';
+import type { CardData, HabitatId, Lang } from '../types';
 
 /* All 12 illustrations are bundled locally. No network, no API key. */
 const svgModules = import.meta.glob('../assets/cards/*.svg', {
@@ -20,6 +20,20 @@ export const HABITAT_META: Record<HabitatId, { label: string; zh: string; color:
   forest:  { label: 'Temperate Forest',   zh: '温带森林', color: '#4F7A57' },
   wetland: { label: 'Freshwater Wetland', zh: '淡水湿地', color: '#6D9B84' },
 };
+
+/** Habitat name in the active UI language. English practice sentences and
+ *  Pip's Why/How dialogue are never translated — only these display labels. */
+export function habitatName(habitat: HabitatId, lang: Lang): string {
+  const meta = HABITAT_META[habitat];
+  if (!meta) return String(habitat);
+  return lang === 'zh' ? meta.zh : meta.label;
+}
+
+/** Animal name shown in side rails / history. The English name always stays;
+ *  Chinese mode appends the Chinese gloss. */
+export function animalName(card: CardData, lang: Lang): string {
+  return lang === 'zh' ? `${card.chineseName} · ${card.animal}` : card.animal;
+}
 
 export const CARDS: CardData[] = [
   {

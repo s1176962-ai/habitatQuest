@@ -1,5 +1,6 @@
 import { Fragment } from 'react';
 import type { WordResult } from '../types';
+import { t, useI18n } from '../i18n';
 
 export function WordLine({
   text, activeWord = -1, results, onWordClick, scanning = false, hidden = false,
@@ -11,9 +12,10 @@ export function WordLine({
   scanning?: boolean;
   hidden?: boolean;
 }) {
+  useI18n();
   if (hidden) {
     return (
-      <div className="target-line text-center muted" style={{ letterSpacing: '.18em' }} aria-label="文字已隐藏，练习纯听力">
+      <div className="target-line text-center muted" style={{ letterSpacing: '.18em' }} aria-label={t('word.hiddenAria')}>
         • • • • • • • • • • • •
       </div>
     );
@@ -30,7 +32,7 @@ export function WordLine({
             onClick={showResults && ['off', 'miss'].includes((item as WordResult).status)
               ? () => onWordClick?.(item as WordResult) : undefined}
             title={showResults && ['off', 'miss'].includes((item as WordResult).status)
-              ? `${(item as WordResult).ipa || ''} 点击查看口型提示与慢速示范` : undefined}
+              ? t('word.hintTitle', { ipa: (item as WordResult).ipa || '' }) : undefined}
           >
             {item.word}
           </span>

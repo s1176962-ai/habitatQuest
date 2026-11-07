@@ -1,9 +1,10 @@
 import type { AnswerEval, CardData } from '../types';
+import { t } from '../i18n';
 
 export const PARTNER = {
   name: 'Pip',
-  tagline: '你的英语伙伴 · 只聊动物和栖息地',
-  age: '9–12 岁',
+  tagline: 'Your English buddy · animals and habitats only',
+  age: '9–12 years',
   level: 'CEFR A2–B1',
 };
 
@@ -24,7 +25,7 @@ score, keywords. Return STRICT JSON only:
 { "total": 0-100, "accuracy": 0-100, "fluency": 0-100,
   "completeness": 0-100,
   "words": [{ "word": "...", "status": "ok|off|miss|extra" }],
-  "advice": "one short, specific sentence in simple English" }`;
+  "advice": "one short, specific sentence" }`;
 
 export const TASK_B_RULES = `TASK B — follow-up. Given the animal, habitat and the student's last answer,
 return STRICT JSON only:
@@ -60,13 +61,16 @@ export function evaluateAnswer(question: string, answer: string, card: CardData)
   const answered = w.length >= 3 && (overlap || usedCausal);
   const longEnough = w.length >= 5;
   const fillerCount = w.filter((x) => FILLERS.includes(x)).length;
-  const parts: string[] = [];
-  parts.push(answered ? '回答切题' : '还没答到问题');
-  parts.push(usedCausal ? '用了因果连接词' : '可以试试用 because / so that 说明原因');
-  parts.push(longEnough ? `长度 ${w.length} 词` : `只有 ${w.length} 词，再多说一句`);
-  parts.push(fillerCount === 0 ? '表达流畅' : `有 ${fillerCount} 个填充词`);
+  // summary is kept for compatibility; the UI rebuilds it from the fields
+  // above so an already-rendered evaluation follows a language switch.
+  const parts: string[] = [
+    t(answered ? 'eval.answered' : 'eval.notAnswered'),
+    t(usedCausal ? 'eval.causal' : 'eval.tryCausal'),
+    t(longEnough ? 'eval.lengthOk' : 'eval.lengthShort', { n: w.length }),
+    t(fillerCount === 0 ? 'eval.fluent' : 'eval.fillers', { n: fillerCount }),
+  ];
   return {
-    answered, usedCausal, longEnough, wordCount: w.length,
+    answered, usedCausal, longEnough, wordCount: w.length, fillerCount,
     summary: parts.join(' · '),
   };
 }
@@ -92,7 +96,7 @@ export function partnerReply(card: CardData, _answer: string, evalResult: Answer
 
 export function wrapLine(card: CardData, newWords: string[]): string {
   const list = newWords.length ? newWords.slice(0, 3).join(' / ') : card.keywords.slice(0, 3).join(' / ');
-  return `本轮你用了 ${Math.min(3, newWords.length || 3)} 个新词：${list}`;
+  return t('wrap.newWords', { n: Math.min(3, newWords.length || 3) }) + list;
 }
 
 export function encouragement(score: number): string {

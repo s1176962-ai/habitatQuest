@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { Loader2, Mic } from 'lucide-react';
 import type {
-  AnswerEval, CardData, ChatBubble, Config, LearningRecord, Msg, Phase,
+  AnswerEval, CardData, ChatBubble, Config, I18nPiece, Lang, LearningRecord, Msg, Phase,
   Player, RecordedTake, ScoreResult, TTSResult, WordResult,
 } from './types';
+import { setLang, t, tr, useI18n } from './i18n';
 import {
   appendRecord, clearRecords as clearStoredRecords, getConfig, readKey, readRecords,
   saveConfig,
@@ -43,8 +44,19 @@ export default function App() {
   /* ------------------------------ settings ------------------------------ */
   const [config, setConfigState] = useState<Config>(() => getConfig());
   const configRef = useRef(config);
-  const onConfig = useCallback((patch: Partial<Config>) => setConfigState({ ...saveConfig(patch) }), []);
-  useEffect(() => { configRef.current = config; document.documentElement.dataset.theme = config.theme; }, [config]);
+  // Subscribes App to language changes; t() itself reads the current store.
+  useI18n();
+  const onConfig = useCallback((patch: Partial<Config>) => {
+    if (patch.language) setLang(patch.language);
+    setConfigState({ ...saveConfig(patch) });
+  }, []);
+  useEffect(() => {
+    configRef.current = config;
+    document.documentElement.dataset.theme = config.theme;
+    document.documentElement.lang = config.language === 'zh' ? 'zh-CN' : 'en';
+    document.title = t('app.title');
+    setLang(config.language);
+  }, [config]);
 
   /* ------------------------------ session ------------------------------- */
   const [cards, setCards] = useState<CardData[]>(() => pickSessionCards(8));
@@ -91,7 +103,7 @@ export default function App() {
       // Any API failure degrades to the offline browser voice — loop never breaks.
       if (err instanceof QuotaError) toast(err.message, 'warn');
       else if (err instanceof NetworkError && err.corsLikely) {
-        toast('直连失败，已用浏览器朗读。可能遇到 CORS，可在设置里启用「经本机代理转发」。', 'warn');
+        toast(t('toast.corsFallback'), 'warn');
       } else if (err instanceof NetworkError) toast(err.message, 'warn');
       result = { mode: 'speech', text: safe, rate };
     }
@@ -174,8 +186,10 @@ export default function App() {
   const [newWords, setNewWords] = useState<string[]>([]);
   const [bubbles, setBubbles] = useState<ChatBubble[]>([]);
   const bubbleId = useRef(1);
-  const addBubble = useCallback((who: ChatBubble['who'], text: string, zh?: string) => {
-    setBubbles((b) => [...b, { id: bubbleId.current++, who, text, zh }]);
+  const addBubble = useCallback((
+    who: ChatBubble['who'], text: string, note?: string, textI18n?: I18nPiece[],
+  ) => {
+    setBubbles((b) => [...b, { id: bubbleId.current++, who, text, note, textI18n }]);
   }, []);
 
   /* -------------------------------- UI ---------------------------------- */
@@ -190,7 +204,7 @@ export default function App() {
   const startListening = useCallback(async (relisten: boolean) => {
     if (relisten) {
       const gate = precheck('relisten', 1, configRef.current.channel);
-      if (!gate.ok) { toast(gate.reason || '重听次数已用完', 'warn'); return; }
+      if (!gate.ok) { toast(gate.reasonKey ? tr(gate.reasonKey, gate.reasonVars) : gate.reason || tr('quota.relistenUsed'), 'warn'); return; }
       consume('relisten', 1, configRef.current.channel);
     }
     setPhase('listening');
@@ -210,29 +224,29 @@ export default function App() {
 
   const onSlowWord = useCallback((w: WordResult) => {
     void playTTS(w.word, 0.75, undefined, true);
-    toast(`慢速示范 "${w.word}" · 0.75×`, 'info');
+    toast(t('toast.slowWord', { word: w.word }), 'info');
   }, [playTTS, toast]);
 
   /* ------------------------------ scoring ------------------------------- */
-  const sttIfNeeded = useCallback(async (t: RecordedTake): Promise<{ text: string; words?: RecordedTake['words']; confidence?: number }> => {
-    if (configRef.current.channel === 'api' && t.blob) {
+  const sttIfNeeded = useCallback(async (takeArg: RecordedTake): Promise<{ text: string; words?: RecordedTake['words']; confidence?: number }> => {
+    if (configRef.current.channel === 'api' && takeArg.blob) {
       try {
-        const r = await getProvider().stt(t.blob);
+        const r = await getProvider().stt(takeArg.blob);
         if (r.text) return { text: r.text, words: r.words, confidence: r.confidence };
-      } catch { toast('云端识别不可用，已使用本地识别结果。', 'warn'); }
+      } catch { toast(t('toast.cloudSttFallback'), 'warn'); }
     }
-    return { text: t.transcript, words: t.words, confidence: t.confidence };
+    return { text: takeArg.transcript, words: takeArg.words, confidence: takeArg.confidence };
   }, [toast]);
 
-  const submitRead = useCallback(async (t: RecordedTake) => {
-    if (!t.transcript) { toast('没听清，再试一次（不计入重录次数）。', 'warn'); return; }
+  const submitRead = useCallback(async (takeArg: RecordedTake) => {
+    if (!takeArg.transcript) { toast(t('toast.notClear'), 'warn'); return; }
     const t0 = Date.now();
     setBusy(true); setPhase('scoring');
     const c = cardRef.current;
-    const tr = await sttIfNeeded(t);
+    const speech = await sttIfNeeded(takeArg);
     const local = localScore({
-      target: c.target, transcript: tr.text, confidence: tr.confidence,
-      words: tr.words, durationSec: t.durationSec, keywords: c.keywords,
+      target: c.target, transcript: speech.text, confidence: speech.confidence,
+      words: speech.words, durationSec: takeArg.durationSec, keywords: c.keywords,
     });
     let final = local;
     if (configRef.current.channel === 'api') {
@@ -241,9 +255,9 @@ export default function App() {
         try {
           consume('scoring', 1, 'api');
           const messages: Msg[] = [
-            { role: 'system', content: `${PIP_SYSTEM_PROMPT}\n${TASK_A_RULES}` },
+            { role: 'system', content: `${PIP_SYSTEM_PROMPT}\n${TASK_A_RULES}\n${t('prompt.adviceRule', { lang: t('prompt.adviceLang') })}` },
             { role: 'user', content: JSON.stringify({
-              target: c.target, transcript: tr.text,
+              target: c.target, transcript: speech.text,
               localScore: { total: local.total, accuracy: local.accuracy, fluency: local.fluency, completeness: local.completeness },
               keywords: c.keywords,
             }) },
@@ -251,7 +265,7 @@ export default function App() {
           const { content } = await getProvider().chat(messages, { maxTokens: LIMITS.SINGLE.scoreMaxTokens, timeoutMs: LIMITS.SINGLE.timeoutMs });
           const parsed = validateScore(content);
           if (parsed) final = mergeScore(local, parsed);
-        } catch { /* silent degradation to local scoring, badge stays 本地评分 */ }
+        } catch { /* silent degradation to local scoring; badge stays "Local scoring" */ }
       }
     }
     const wait = Math.max(0, 950 - (Date.now() - t0));
@@ -268,14 +282,17 @@ export default function App() {
     setRecords(appendRecord(rec));
     setSessionRecords((s) => [...s, rec]);
     setHistory((h) => [...h, { card: c, score: final.total }]);
-    addBubble('note', `跟读完成 · ${final.total} 分 · ${final.engine === 'local' ? '本地评分' : 'API 评分'}`);
+    addBubble('note', '', undefined, [{
+      key: final.engine === 'local' ? 'conv.readDoneLocal' : 'conv.readDoneApi',
+      vars: { score: final.total },
+    }]);
     setPhase('feedback');
     setBusy(false);
   }, [addBubble, player, round, sttIfNeeded, toast]);
 
   const retryPractice = useCallback(() => {
     const gate = precheck('reRecord', 1, configRef.current.channel);
-    if (!gate.ok) { toast(gate.reason || '重录次数已用完', 'warn'); return; }
+    if (!gate.ok) { toast(gate.reasonKey ? tr(gate.reasonKey, gate.reasonVars) : gate.reason || tr('quota.rerecordUsed'), 'warn'); return; }
     consume('reRecord', 1, configRef.current.channel);
     resetTake(); setScore(null); setHintWord(null); setPhase('recording');
   }, [resetTake, toast]);
@@ -304,20 +321,20 @@ export default function App() {
       }
     }
     setQuestion(q);
-    addBubble('pip', q, 'Why / How 因果题 · 不是 Yes/No');
+    addBubble('pip', q, 'conv.questionNote');
     setQuestionPlaying(true);
     void playTTS(q, configRef.current.rate, undefined, true);
   }, [addBubble, playTTS, score, stopTTS]);
 
   const startAnswering = useCallback(() => { stopTTS(); resetTake(); setPhase('answering'); }, [resetTake, stopTTS]);
 
-  const submitAnswer = useCallback(async (t: RecordedTake) => {
-    if (!t.transcript) { toast('没听清，再试一次（不计入重录次数）。', 'warn'); return; }
+  const submitAnswer = useCallback(async (takeArg: RecordedTake) => {
+    if (!takeArg.transcript) { toast(t('toast.notClear'), 'warn'); return; }
     setBusy(true);
     const c = cardRef.current;
-    const tr = await sttIfNeeded(t);
-    const ev = evaluateAnswer(question, tr.text, c);
-    let reply = partnerReply(c, tr.text, ev);
+    const speech = await sttIfNeeded(takeArg);
+    const ev = evaluateAnswer(question, speech.text, c);
+    let reply = partnerReply(c, speech.text, ev);
     if (configRef.current.channel === 'api') {
       const gate = precheck('answerScoring', 1, 'api');
       if (gate.ok) {
@@ -327,7 +344,7 @@ export default function App() {
             { role: 'system', content: `${PIP_SYSTEM_PROMPT}\n${TASK_B_RULES}` },
             { role: 'user', content: JSON.stringify({
               animal: c.animal, habitat: c.habitat, habitatLabel: c.habitatLabel,
-              adaptation: c.adaptation, cardId: c.id, answer: tr.text, question,
+              adaptation: c.adaptation, cardId: c.id, answer: speech.text, question,
             }) },
           ];
           const { content } = await getProvider().chat(messages, { maxTokens: LIMITS.SINGLE.questionMaxTokens, timeoutMs: LIMITS.SINGLE.timeoutMs });
@@ -336,16 +353,16 @@ export default function App() {
         } catch { /* local natural reply */ }
       }
     }
-    addBubble('me', tr.text);
-    addBubble('pip', reply, '自然的回应，而不是纠错轰炸');
+    addBubble('me', speech.text);
+    addBubble('pip', reply, 'conv.replyNote');
     setAnswerEval(ev);
-    const hits = keywordHits(tr.text, c.keywords);
+    const hits = keywordHits(speech.text, c.keywords);
     setNewWords(hits.length ? hits : c.keywords.slice(0, 3));
     setPhase('wrap'); setBusy(false);
   }, [addBubble, question, sttIfNeeded, toast]);
 
   const skipAnswer = useCallback(() => {
-    addBubble('note', '本轮跳过口头回答');
+    addBubble('note', '', undefined, [{ key: 'conv.skipRound' }]);
     setAnswerEval(null); setNewWords(cardRef.current.keywords.slice(0, 3)); setPhase('wrap');
   }, [addBubble]);
 
@@ -371,7 +388,7 @@ export default function App() {
     setQuestion(''); setBubbles([]); setAnswerEval(null); setHintWord(null);
     setImageUrl(null); setImageGenerated(false); setHistory([]); setSessionRecords([]);
     setShowText(true); setSubtitle(true);
-    toast('已开始新的一组 8 张卡，用量计数已重置。', 'ok');
+    toast(t('toast.newSession'), 'ok');
   }, [imageUrl, resetTake, stopTTS, toast]);
 
   const clearAllRecords = useCallback(() => {
@@ -382,13 +399,13 @@ export default function App() {
   const onUploadImage = useCallback((f: File) => {
     revoke(imageUrl);
     setImageUrl(URL.createObjectURL(f)); setImageGenerated(false);
-    toast('已使用你自己的图片（仅在本机内存，不上传）。', 'ok');
+    toast(t('toast.imageUploaded'), 'ok');
   }, [imageUrl, toast]);
 
   const onGenerateImage = useCallback(async () => {
     const c = cardRef.current;
     const gate = precheck('image', 1, 'api');
-    if (!gate.ok) { toast(gate.reason || '图片配额已用完', 'warn'); return; }
+    if (!gate.ok) { toast(gate.reasonKey ? tr(gate.reasonKey, gate.reasonVars) : gate.reason || tr('quota.imageUsed'), 'warn'); return; }
     setImageBusy(true);
     try {
       const provider = getProvider();
@@ -397,18 +414,18 @@ export default function App() {
       consume('image', 1, 'api');
       revoke(imageUrl);
       setImageUrl(url); setImageGenerated(true);
-      toast('AI 图片已生成（本机 blob URL，未落盘）。', 'ok');
+      toast(t('toast.imageGenerated'), 'ok');
     } catch (e) {
-      toast(e instanceof NetworkError ? '图片生成失败，已回落到内置本地插画。' : '该通道暂不支持图片生成，继续使用内置插画。', 'warn');
+      toast(e instanceof NetworkError ? t('toast.imageFail') : t('toast.imageUnsupported'), 'warn');
     } finally { setImageBusy(false); }
   }, [imageUrl, toast]);
 
   /* --------------------------- test connection -------------------------- */
   const onTestConnection = useCallback(async () => {
     if (configRef.current.channel === 'local') {
-      toast('本地通道无需测试连接 · 不产生任何网络请求。', 'ok'); return;
+      toast(t('toast.localTest'), 'ok'); return;
     }
-    if (!readKey()) { toast('请先填入 API Key（仅存本机）。', 'warn'); return; }
+    if (!readKey()) { toast(t('toast.needKey'), 'warn'); return; }
     const t0 = performance.now();
     try {
       await getProvider().chat(
@@ -418,12 +435,14 @@ export default function App() {
       const ms = Math.round(performance.now() - t0);
       const u = usageSummary();
       const q = getQuotaSnapshot();
-      toast(`连接成功 · 延迟 ${ms}ms · 剩余 ${u.remainingTokens.toLocaleString()} tokens · 今日 ${q.daily.apiCalls}/60 次`, 'ok');
+      toast(t('toast.testOk', {
+        ms, tokens: u.remainingTokens.toLocaleString(), calls: q.daily.apiCalls,
+      }), 'ok');
     } catch (e) {
       if (e instanceof QuotaError) toast(e.message, 'warn');
       else if (e instanceof NetworkError) {
-        toast(`${e.message}${e.corsLikely ? ' 建议启用「经本机代理转发」。' : ''}`, 'bad');
-      } else toast('测试失败，请检查 Base URL、模型名与密钥。', 'bad');
+        toast(`${e.message}${e.corsLikely ? t('toast.proxyAdvice') : ''}`, 'bad');
+      } else toast(t('toast.testFail'), 'bad');
     }
   }, [toast]);
 
@@ -465,6 +484,7 @@ export default function App() {
         onToggleDuo={() => onConfig({ duo: !config.duo })}
         onToggleNetwork={() => setNetworkOpen((v) => !v)}
         onToggleRails={() => onConfig({ compactRails: !config.compactRails })}
+        onToggleLanguage={() => onConfig({ language: config.language === 'zh' ? 'en' : 'zh' })}
         onNewSession={startNewSession}
         onToast={toast}
       />
@@ -495,8 +515,8 @@ export default function App() {
           {phase === 'scoring' && (
             <div className="panel p-6 text-center fade-in">
               <Loader2 size={26} className="mx-auto mb-2 animate-spin" style={{ color: 'var(--accent)' }} />
-              <div className="font-display text-[1.05rem]">AI 正在听你的发音…</div>
-              <div className="text-[.72rem] muted mt-1">逐词扫描中 · 超时自动降级到本地评分</div>
+              <div className="font-display text-[1.05rem]">{t('toast.scoringTitle')}</div>
+              <div className="text-[.72rem] muted mt-1">{t('toast.scoringSub')}</div>
               <div className="flex justify-center gap-1 mt-3 flex-wrap max-w-md mx-auto">
                 {card.target.split(/\s+/).map((w, i) => (
                   <span key={i} className="word scan text-[.72rem]" style={{ animationDelay: `${i * 55}ms` }}>{w}</span>
@@ -522,21 +542,21 @@ export default function App() {
           {phase === 'feedback' && score && (
             <>
               <FeedbackPanel
-                score={score} target={card.target} advice={score.advice}
+                score={score} target={card.target}
                 rerecordLeft={rerecordLeft}
                 onRetry={retryPractice} onQuestion={() => void gotoQuestion()} onSkip={() => void gotoQuestion()}
                 onWordClick={setHintWord}
               />
               {duoPending && (
                 <div className="panel p-3 flex items-center justify-between gap-2 flex-wrap fade-in">
-                  <div className="text-[.74rem]"><b>双人练习</b> <span className="muted">· A 同学 {duoScores.A?.total} 分，轮到 B 同学说同一张卡</span></div>
+                  <div className="text-[.74rem]"><b>{t('toast.duoTitle')}</b> <span className="muted">{t('toast.duoText', { score: duoScores.A?.total ?? 0 })}</span></div>
                   <button className="btn btn-sm btn-primary" onClick={() => {
                     setPlayer('B'); resetTake(); setScore(null); setHintWord(null); setPhase('recording');
-                  }}><Mic size={12} /> 换 B 同学</button>
+                  }}><Mic size={12} /> {t('toast.duoSwitch')}</button>
                 </div>
               )}
               {config.duo && duoScores.A && duoScores.B && (
-                <div className="chip chip-ok">两位同学都完成了：A {duoScores.A.total} 分 · B {duoScores.B.total} 分</div>
+                <div className="chip chip-ok">{t('toast.duoDone', { a: duoScores.A.total, b: duoScores.B.total })}</div>
               )}
             </>
           )}
@@ -589,7 +609,7 @@ export default function App() {
         <GrowthReport
           records={sessionRecords.length ? sessionRecords : records.slice(-8)}
           onRestart={startNewSession}
-          onClear={() => { clearAllRecords(); clearNetworkLog(); toast('本机学习记录与请求清单已清空。', 'ok'); }}
+          onClear={() => { clearAllRecords(); clearNetworkLog(); toast(t('toast.recordsCleared'), 'ok'); }}
           onClose={() => setReport(false)}
         />
       )}

@@ -1,4 +1,5 @@
 import type { Channel, ChatUsage, Config, RequestLogEntry } from '../types';
+import { t } from '../i18n';
 import { getConfig, readKey, readRequestLog, writeRequestLog } from './storage';
 import { LIMITS, consume, correctUsage, precheck, type QuotaKind } from './quota';
 
@@ -23,7 +24,7 @@ export class NetworkError extends Error {
   constructor(message: string, corsLikely = false) { super(message); this.name = 'NetworkError'; this.corsLikely = corsLikely; }
 }
 export class DomainError extends Error {
-  constructor() { super('请求目标与设置里的 Base URL 不一致，已阻止。'); this.name = 'DomainError'; }
+  constructor() { super(t('err.domain')); this.name = 'DomainError'; }
 }
 
 let log: RequestLogEntry[] = readRequestLog();
@@ -51,10 +52,12 @@ export function externalDomains(config: Config = getConfig()): string[] {
   } catch { return []; }
 }
 
+/** Resolved at call time; callers subscribe with useI18n() so the switch
+ *  re-renders them. Keys are not stored here because {domain} is dynamic. */
 export function domainStatusText(config: Config = getConfig()): string {
-  if (config.channel === 'local') return '本地模式 · 未发起任何外部请求';
+  if (config.channel === 'local') return t('net.localStatus');
   const d = externalDomains(config)[0];
-  return d ? `仅连接至 ${d}` : 'API 通道 · 尚未配置有效域名';
+  return d ? t('net.apiStatus', { domain: d }) : t('net.apiNoDomain');
 }
 
 function clock(): string {
@@ -91,9 +94,10 @@ export interface NetworkResult { response: Response; logId: number }
 export function proxyCommand(config: Config = getConfig()): string {
   const q = (s: string) => `"${s.replace(/"/g, '\\"')}"`;
   const isWin = typeof navigator !== 'undefined' && /Win/i.test(navigator.platform);
+  const keyPlaceholder = t('set.proxyKeyPlaceholder');
   return isWin
-    ? `set HQ_TARGET_BASE_URL=${q(config.baseUrl)} && set HQ_API_KEY=${q('<你的密钥>')} && node scripts/local-proxy.mjs`
-    : `HQ_TARGET_BASE_URL=${q(config.baseUrl)} HQ_API_KEY=${q('<你的密钥>')} node scripts/local-proxy.mjs`;
+    ? `set HQ_TARGET_BASE_URL=${q(config.baseUrl)} && set HQ_API_KEY=${q(keyPlaceholder)} && node scripts/local-proxy.mjs`
+    : `HQ_TARGET_BASE_URL=${q(config.baseUrl)} HQ_API_KEY=${q(keyPlaceholder)} node scripts/local-proxy.mjs`;
 }
 
 export async function networkRequest(
@@ -109,7 +113,7 @@ export async function networkRequest(
     base = new URL(config.baseUrl.replace(/\/+$/, '') + '/');
     dest = new URL(path.replace(/^\/+/, ''), base);
   } catch {
-    throw new NetworkError('Base URL 格式不正确，请在设置里检查。');
+    throw new NetworkError(t('err.baseUrl'));
   }
   // Hard domain whitelist — the app cannot be pointed anywhere else at runtime.
   if (dest.origin !== base.origin) throw new DomainError();
@@ -118,9 +122,10 @@ export async function networkRequest(
   if (!gate.ok) {
     addEntry({
       domain: dest.host, purpose: opts.purpose, promptTokens: 0, completionTokens: 0,
-      status: '已拦截', ok: false, channel, note: gate.reason,
+      status: 'net.status.blocked', ok: false, channel,
+      note: gate.reasonKey ?? gate.reason, noteVars: gate.reasonVars,
     });
-    throw new QuotaError(gate.reason || '额度已用完');
+    throw new QuotaError(gate.reason || t('quota.usedUp'));
   }
 
   const headers = new Headers(init.headers || {});
@@ -147,10 +152,10 @@ export async function networkRequest(
     purpose: opts.purpose,
     promptTokens: estTokens,
     completionTokens: 0,
-    status: '请求中…',
+    status: 'net.status.pending',
     ok: false,
     channel,
-    note: opts.note || (config.proxyMode ? '经本机代理转发' : '直连'),
+    note: opts.note || (config.proxyMode ? 'net.note.proxy' : 'net.note.direct'),
   });
 
   const controller = new AbortController();
@@ -165,14 +170,9 @@ export async function networkRequest(
     return { response, logId };
   } catch (err) {
     const aborted = err instanceof DOMException && err.name === 'AbortError';
-    patchEntry(logId, { status: aborted ? '超时 15s' : '网络/CORS 错误', ok: false });
+    patchEntry(logId, { status: aborted ? 'net.status.timeout' : 'net.status.neterr', ok: false });
     // Generic messages only — never interpolate the key or the raw error body.
-    throw new NetworkError(
-      aborted
-        ? '请求超时，已自动降级到本地通道。'
-        : '直连失败（可能是浏览器 CORS 限制）。可在设置里启用本机代理，或切回本地通道。',
-      !aborted,
-    );
+    throw new NetworkError(aborted ? t('err.timeout') : t('err.cors'), !aborted);
   } finally {
     clearTimeout(timeout);
     opts.signal?.removeEventListener('abort', onExternalAbort);

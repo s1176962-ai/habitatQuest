@@ -1,4 +1,4 @@
-# HabitatQuest · Step 4 口语练习 AI 助手（本地可交互原型）
+# HabitatQuest · 口语练习 AI 助手（本地可交互原型）
 
 > **演示原型 · 本地运行**。这是一个单机前端原型：没有后端、没有云函数、没有数据库、没有账号体系、没有埋点/分析/错误上报、没有任何 CDN 资源。所有插画、字体栈、图表、音效逻辑都随项目本地打包。
 
@@ -64,6 +64,59 @@ npm run dev
 技术栈：Vite 6 + React 18 + TypeScript + Tailwind CSS v4 + GSAP 3 + `lucide-react`。运行时依赖只有 `react / react-dom / gsap / lucide-react`；构建工具全是 devDependencies。无图表库、无 UI 组件库（图表为自绘 SVG）。
 
 **不联网也能上课**：默认即本地通道，断网后 8 轮完整闭环仍然可用。
+
+---
+
+## 中英双语切换（默认英文）
+
+> **默认英文**：首次打开（或清除浏览器数据）后，界面与教学辅助文案全部为英文。选择会写入 `hq4:config` 的 `language` 字段（`en` / `zh`），刷新后保持不变。
+
+**两处入口，状态实时同步：**
+
+| 入口 | 控件 | 说明 |
+|---|---|---|
+| 顶栏 | `中 / EN` | 一键切换，练习过程中随时可用 |
+| 设置抽屉 | `中文 / English` | 与顶栏双向同步 |
+
+切换时同步更新 `<html lang>`（`en` ⇄ `zh-CN`）与浏览器标题（英文 ⇄ 中文），并同步 `aria-label` / `title` 等无障碍标签。
+
+**会切换的内容（界面 + 教学辅助文案）**
+
+- 顶栏、侧栏、常驻步骤条与「下一步」提示、卡片操作按钮、录音器、评分面板、逐词诊断、音标口型提示、Pip 对话区标签、小结、成长报告、设置抽屉、网络请求清单、提示条；
+- **动态生成的内容**：本地评分建议、跟读完成提示气泡、开放式回答评价、配额拦截原因、请求日志的用途 / 状态 / 备注、用量明细标签；
+- 动物中文名与栖息地中文名（仅中文模式显示，英文模式恢复英文，如 `北极狐 · 极地苔原` ⇄ `Arctic Fox · Polar Tundra`）。
+
+**始终保持英文的内容（学习材料）**
+
+- 目标句与逐词高亮文本；
+- Pip 的 Why / How 因果追问、伙伴英文回应、句型支架；
+- 学生输入的英文转写与口头回答。
+
+这样切换语言只改变辅助理解所用的语种，不改变练习难度，也不会把英语口语练习变成中文练习。
+
+**实现方式**：`src/i18n/` 是一个零依赖的轻量 i18n store，基于 `useSyncExternalStore` 而非 React Context —— 因为 `quota.ts`、`network.ts`、providers、评分等非 React 模块同样要产出文案。`locales/en.ts` 是默认字典，`locales/zh.ts` 声明为 `Record<keyof typeof en, string>`，由 TypeScript 强制两套键完全对齐。对外 API：`getLang()` / `setLang()` / `subscribeLang()` / `t(key, vars)` / `tr(value, vars)` / `renderPieces(pieces)` / `useI18n()`，字典支持 `{name}` 占位符插值。
+
+关键约定：**动态文案一律存 i18n key，不存成品字符串**（`I18nPiece[]`、`ScoreResult.adviceI18n`、`CheckResult.reasonKey`、`PhonemeHint.tipKey`、`RequestLogEntry.noteVars`）。因此在练习中途切换语言时，已经生成好的气泡、评分建议、回答评价和日志状态都会立即重译，无需重跑流程；中文动物名、栖息地名等展示辅助也由 `habitatName()` / `animalName()` 按当前语言取值。
+
+**一个诚实边界**：API 通道由 LLM 返回的 `advice` 是生成那一刻的成品文本，切换语言后**不会**重译（重新提交评分才会按新语言生成）；本地通道的建议则实时跟随切换。判分 JSON 的字段名与判分逻辑在两种语言下完全一致。
+
+**不受影响**：本地优先、零外发请求、隐私约束、三层配额、8 轮闭环等设计全部不变；配置里只多存一个 `language` 字段。
+
+---
+
+## 语音识别兜底与界面命名
+
+**语音识别不再丢失转写**：浏览器 `SpeechRecognition` 在慢速 / 受限网络下经常只给出 interim（临时）结果，不把它提升为 final。旧实现只收集 final 结果，并且在 `stop()` 的瞬间就冻结转写，于是会出现「屏幕上明明显示 `Recognising: This is an arctic fox…`，提交时却变成 `Didn't catch that`」的情况。现在 `src/lib/speech.ts`：
+
+- 每次 `onresult` 都从**完整结果列表**重建转写（已定稿的 final + 尚未定稿的 interim），并实时写入待读取的转写；
+- `stop()` 不再提前冻结，允许引擎在 `stop()` 之后补发 final 结果（Chrome 的常见行为）；
+- `Recorder` 在 `MediaRecorder.onstop` 里 `await handle.finish()` 后才生成 take，最多等 900ms 兜底，避免引擎不发 `onend` 时卡住；
+- 确实一个字都没拿到时，自动展开「上传 / 输入兜底」并给出提示，不再让学生卡在空转写上；
+- `Recognising: ` / `Transcript: ` / `Current: ` 等英文前缀补齐空格。
+
+练习句始终按 `rec.lang = 'en-US'` 识别，与界面语言无关。
+
+**命名**：界面上原有的 `Step 4` 全部换成 `Speaking Practice`（中文 `口语练习`）或 `Voice Practice`（中文 `语音练习`）——顶栏标题、侧栏与顶栏徽标、成长报告徽标、浏览器标题、README 与一键启动脚本。保留的只有内部包名 `habitatquest-step4`、五步教学步骤中的 `guide.step4`（它就是真实的第 4 步「回答 Why/How」）以及两份历史 UI 快照 `hq-*.yml`，它们都不是用户可见文案。
 
 ---
 
@@ -187,6 +240,7 @@ HQ_TARGET_BASE_URL=https://api.openai.com/v1 HQ_API_KEY='<你的密钥>' node sc
 scripts/gen_cards.py          生成 12 张本地 SVG 插画
 scripts/local-proxy.mjs       可选本机 CORS 转发（127.0.0.1:8787）
 src/assets/cards/*.svg        6 栖息地 × 2 动物的本地插画
+src/i18n/                     index.ts（store / t / tr / renderPieces / useI18n）+ locales/en.ts、zh.ts
 src/mock/                     cards.ts / questionBank.ts / phonemeHints.ts / partner.ts
 src/lib/
   storage.ts                  密钥 / 配置 / 学习记录 / 请求日志（分离存储 + clearAll）
@@ -216,4 +270,25 @@ vite.config.ts                 本地 dev 配置 + 生产 HTML 自包含内联�
 - 密钥框为 `type=password`；默认仅存在于 `sessionStorage`，`localStorage`（含学习记录）中搜不到完整 key；「清除密钥」后立即消失。
 - 375px 宽无横向滚动，`documentElement.scrollWidth === innerWidth`。
 
-未做（按设计）：真实 API Key 的联网调用验证 —— 原型以本地优先，联网行为由使用者自行在「网络请求清单」中审查。
+### 中英双语（本轮新增，已逐项回归）
+
+- 全部改造完成后重新执行 `npm run typecheck` / `npm run build`，均通过（`✓ 1624 modules transformed`）；`dist/index.html` 仍是自包含单文件（约 469 KB，无外部 `src` / `href`），默认 `<html lang="en">` 与英文标题。
+- 清除 `hq4:config` 后刷新：顶栏 `EN` 为 pressed、`<html lang="en">`、英文标题；点 `中` → `zh-CN` + 中文标题 + `language: "zh"`；刷新后仍为中文；点 `EN` 恢复英文。
+- 顶栏与设置抽屉两处开关双向同步（在抽屉里点 `中文` 后，顶栏 `中` 同步为 pressed，`hq4:config.language === "zh"`）；`Esc` 正常关闭抽屉。
+- 界面与教学辅助文案全部随语言切换；目标句 `This is an arctic fox...`、Pip 的 `Why is white a useful colour for this animal?`、伙伴英文回应、句型支架在两种语言下均保持英文。
+- **动态内容跟随中途切换**：在 `feedback` / `question` / `wrap` 阶段切换语言，评分建议 `读得很完整！…` ⇄ `Very complete!…`、气泡 `跟读完成 · 98 分 · 本地评分` ⇄ `Read-aloud complete · 98 pts · Local scoring`、回答评价 `回答切题 · 用了因果连接词 · 长度 22 词 · 表达流畅` ⇄ `On topic · used a causal connector · 22 words · fluent delivery`、小结与栖息地名 `极地苔原` ⇄ `Polar Tundra` 均即时重译，无需重跑流程。
+- 本地通道全程 **0 条外发请求**（请求日志为空、状态条显示本地模式）；`375px` 下 `scrollWidth === innerWidth`（375 = 375），无横向滚动；控制台 **0 error / 0 warning**。
+- 生产构建产物单独通过本机 HTTP 服务回归：默认 `en`、页面内无外部 `script[src]` / `link[href]`、切到 `zh` 后标题与文案变为中文、刷新后仍为中文，控制台 **0 error / 0 warning**。
+- `card → listening → recording → scoring → feedback → question → answering → wrap` 八个阶段在中文与英文下均以文字兜底回归通过。
+
+> 本轮自动化浏览器禁止 `file:` 协议，因此 `file:///.../dist/index.html` 未在本轮重复打开（此前已验证过）；改用本机 HTTP 服务加载**同一份**自包含构建产物完成回归，结论一致。
+
+### 语音识别与命名（本轮新增，已逐项回归）
+
+- 用模拟的 `SpeechRecognition` 覆盖四个场景：**只有 interim 结果** → 仍能拿到完整转写；final 结果在 `stop()` **之后**才到达 → 正常收下（置信度 0.85）；`abort()` → 清空且不泄漏到下一次录音；引擎不发 `onend` → 903ms 后由兜底定时器返回，流程不卡死。
+- `npm run typecheck` / `npm run build` 通过（`✓ 1624 modules transformed`），`dist/index.html` 标题为 `HabitatQuest · Speaking Practice (Local Prototype)`。
+- 默认英文：顶栏 `HabitatQuest · Speaking Practice`、徽标 `Voice Practice`，页面文本已无 `Step 4`；切中文后为 `HabitatQuest · 口语练习` / `语音练习`，标题与 `<html lang>` 同步切换。
+- 英文 CTA 较长，曾导致 375px 下 2px 横向滚动；已让 `.cta-row .btn-lg` 在窄屏换行。现 375px / 320px 下 `scrollWidth === innerWidth`，1440px 下按钮仍为单行。
+- 文字兜底全流程回归通过（`Transcript: This is an arctic fox…` → 评分面板），控制台 **0 error / 0 warning**。
+
+未做（按设计）：真实 API Key 的联网调用验证 —— 原型以本地优先，联网行为由使用者自行在「网络请求清单」中审查；API 通道下 `advice` 的语言跟随与静默降级逻辑未做真实联网回归。真实浏览器麦克风 + 云识别的端到端联调依赖本机硬件与网络，本轮以模拟引擎 + 文字兜底路径覆盖。

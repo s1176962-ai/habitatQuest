@@ -1,4 +1,11 @@
-/* Shared types — HabitatQuest Step 4 (local-only prototype) */
+/* Shared types — HabitatQuest Speaking Practice (local-only prototype) */
+
+/** UI language. English is the default; the choice is persisted in Config. */
+export type Lang = 'en' | 'zh';
+export type I18nVars = Record<string, string | number>;
+/** A translatable fragment. Stored instead of a finished string so an
+ *  already-rendered value can follow a language switch. */
+export interface I18nPiece { key: string; vars?: I18nVars }
 
 export type Phase =
   | 'card' | 'listening' | 'recording' | 'scoring'
@@ -9,9 +16,10 @@ export const PHASES: Phase[] = [
   'feedback', 'question', 'answering', 'wrap',
 ];
 
+/** Values are i18n keys, resolved with t() at render time. */
 export const PHASE_LABEL: Record<Phase, string> = {
-  card: '看图', listening: '听示范', recording: '跟读', scoring: '判分',
-  feedback: '诊断', question: 'AI 追问', answering: '口头回答', wrap: '小结',
+  card: 'phase.card', listening: 'phase.listening', recording: 'phase.recording', scoring: 'phase.scoring',
+  feedback: 'phase.feedback', question: 'phase.question', answering: 'phase.answering', wrap: 'phase.wrap',
 };
 
 export type HabitatId = 'polar' | 'ocean' | 'desert' | 'savanna' | 'forest' | 'wetland';
@@ -52,6 +60,8 @@ export interface ScoreResult {
   words: WordResult[];
   transcript: string;
   advice: string;
+  /** Preferred render path for locally generated advice (follows language). */
+  adviceI18n?: I18nPiece[];
   engine: 'local' | 'api';
   wpm: number;
   durationSec: number;
@@ -106,6 +116,8 @@ export interface Config {
   noSaveAudio: boolean;
   duo: boolean;
   theme: 'light' | 'dark';
+  /** UI language, persisted with the rest of the non-secret settings. */
+  language: Lang;
   /** Focus mode: hide the left/right rails so only the practice stage remains. */
   compactRails: boolean;
   /** Show the small bottom-right network pill. The full panel is always reachable from the top bar. */
@@ -128,7 +140,10 @@ export interface ChatBubble {
   id: number;
   who: 'pip' | 'me' | 'note';
   text: string;
-  zh?: string;
+  /** Optional annotation below the bubble; an i18n key or plain text. */
+  note?: string;
+  /** Preferred render path for note bubbles (follows language switches). */
+  textI18n?: I18nPiece[];
 }
 
 export interface RequestLogEntry {
@@ -141,7 +156,9 @@ export interface RequestLogEntry {
   status: string;
   ok: boolean;
   channel: Channel;
+  /** i18n key (or a plain string); resolved with tr() at render time. */
   note?: string;
+  noteVars?: I18nVars;
 }
 
 export interface RoundCounters {
@@ -175,6 +192,8 @@ export interface AnswerEval {
   usedCausal: boolean;
   longEnough: boolean;
   wordCount: number;
+  fillerCount: number;
+  /** Kept for compatibility; the UI rebuilds the sentence from the fields above. */
   summary: string;
 }
 

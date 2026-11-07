@@ -1,5 +1,5 @@
 """
-Generates the 12 offline SVG illustration cards for HabitatQuest Step 4.
+Generates the 12 offline SVG illustration cards for HabitatQuest Speaking Practice.
 
 Run:  python scripts/gen_cards.py     (or  npm run gen:cards)
 

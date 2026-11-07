@@ -1,8 +1,8 @@
 @echo off
 setlocal
-title HabitatQuest Step 4 - One-click Launcher
+title HabitatQuest Speaking Practice - One-click Launcher
 
-REM  One-click launcher for HabitatQuest Step 4 (local-only prototype).
+REM  One-click launcher for HabitatQuest Speaking Practice (local-only prototype).
 REM  Everything in this file is ASCII on purpose: CMD reads .bat files using
 REM  the system codepage, so non-ASCII text can get garbled. The project path
 REM  itself may contain spaces or Chinese; %~dp0 handles that safely.
@@ -11,7 +11,7 @@ cd /d "%~dp0"
 
 echo.
 echo  ==========================================================
-echo   HabitatQuest  Step 4  Oral Practice  [LOCAL PROTOTYPE]
+echo   HabitatQuest  Speaking Practice  [LOCAL PROTOTYPE]
 echo  ==========================================================
 echo.
 

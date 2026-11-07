@@ -1,0 +1,153 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e11]:
+        - heading "HabitatQuest · Speaking Practice" [level=1] [ref=e12]:
+          - text: HabitatQuest
+          - generic [ref=e13]: · Speaking Practice
+        - generic [ref=e14]: Speaking practice AI companion · Demo prototype · Runs locally
+      - generic "Click the network pill at the bottom right to see the request log" [ref=e15]: Local mode · no external requests made
+      - button "Round 1/8 ≈ ¥0.00" [ref=e25] [cursor=pointer]:
+        - generic [ref=e30]:
+          - generic [ref=e31]: Round 1/8
+          - generic [ref=e32]: ≈ ¥0.00
+      - group "Interface language" [ref=e36]:
+        - button "中" [ref=e37] [cursor=pointer]
+        - button "EN" [pressed] [ref=e38] [cursor=pointer]
+      - button "Network request log" [ref=e39] [cursor=pointer]
+      - button "Toggle side rails" [ref=e44] [cursor=pointer]
+      - button "Pair practice (two students take turns on the same card)" [ref=e48] [cursor=pointer]
+      - button "Toggle light / dark theme" [ref=e54] [cursor=pointer]
+      - button "Settings" [ref=e57] [cursor=pointer]
+      - generic [ref=e61]: Voice Practice
+      - generic [ref=e62]: Demo prototype · Runs locally
+  - generic [ref=e63]:
+    - complementary [ref=e64]:
+      - generic [ref=e65]:
+        - generic [ref=e66]: Voice Practice
+        - generic [ref=e67]: "From recognition to spoken expression: look → listen → repeat → score → Why/How follow-up → answer aloud."
+      - generic [ref=e68]:
+        - generic [ref=e69]:
+          - text: Round progress
+          - generic [ref=e70]: 1 / 8
+        - generic [ref=e71]:
+          - generic [ref=e72]: "1"
+          - generic [ref=e73]: "2"
+          - generic [ref=e74]: "3"
+          - generic [ref=e75]: "4"
+          - generic [ref=e76]: "5"
+          - generic [ref=e77]: "6"
+          - generic [ref=e78]: "7"
+          - generic [ref=e79]: "8"
+        - generic [ref=e80]: 8 rounds per session, one picture card each.
+      - generic [ref=e81]:
+        - generic [ref=e82]: Card history
+        - generic [ref=e83]: Finish a round and thumbnails will appear here.
+      - generic [ref=e84]:
+        - generic [ref=e85]: My progress
+        - img "score trend" [ref=e86]:
+          - generic [ref=e87]: No scores yet — finish the first round to see the curve
+        - generic [ref=e88]: No scores yet
+      - generic [ref=e89]:
+        - generic [ref=e90]: Keyboard shortcuts
+        - generic [ref=e93]: Space hold to record · Enter submit · Esc close drawer / skip
+      - generic [ref=e94]: Demo prototype · Runs locally
+    - main [ref=e95]:
+      - generic "Round progress and next step" [ref=e96]:
+        - generic [ref=e97]:
+          - generic [ref=e98]: Round 1 / 8
+          - generic [ref=e99]:
+            - generic [ref=e100]:
+              - generic [ref=e101]: "1"
+              - text: Listen
+            - generic [ref=e102]: ›
+            - generic [ref=e103]:
+              - generic [ref=e104]: "2"
+              - text: Record
+            - generic [ref=e105]: ›
+            - generic [ref=e106]:
+              - generic [ref=e107]: "3"
+              - text: See your score
+            - generic [ref=e108]: ›
+            - generic [ref=e109]:
+              - generic [ref=e110]: "4"
+              - text: Answer Why / How
+            - generic [ref=e111]: ›
+            - generic [ref=e112]:
+              - generic [ref=e113]: "5"
+              - text: Wrap up · next round
+        - generic [ref=e114]: "Next: Tap the big button below (or the picture card) to hear the English model, then start recording."
+      - generic [ref=e118]:
+        - button "Arctic Fox picture card — tap to hear the English pronunciation" [ref=e120] [cursor=pointer]:
+          - img "polar-fox habitat illustration" [ref=e122]
+          - generic [ref=e157]: Tap to listen
+        - generic [ref=e162]:
+          - generic [ref=e163]:
+            - generic [ref=e164]:
+              - heading "Arctic Fox · Polar Tundra" [level=2] [ref=e165]:
+                - text: Arctic Fox
+                - generic [ref=e166]: · Polar Tundra
+              - generic [ref=e167]: "Level ★☆☆ · Adaptation: thick fur"
+            - button "Upload image" [ref=e169] [cursor=pointer]
+          - generic [ref=e173]:
+            - generic [ref=e174]: thick fur
+            - generic [ref=e175]: white coat
+            - generic [ref=e176]: cold tundra
+        - generic [ref=e178]:
+          - generic [ref=e179]:
+            - generic [ref=e180]: Target sentence · word-by-word highlight
+            - generic [ref=e181]:
+              - button "0.75×" [ref=e182] [cursor=pointer]
+              - button "Hide text" [ref=e183] [cursor=pointer]
+              - button "Listen again (2)" [disabled] [ref=e189]:
+                - text: Listen again
+                - generic [ref=e194]: (2)
+          - generic [ref=e195]:
+            - generic [ref=e196]: This
+            - generic [ref=e197]: is
+            - generic [ref=e198]: an
+            - generic [ref=e199]: arctic
+            - generic [ref=e200]: fox.
+            - generic [ref=e201]: It
+            - generic [ref=e202]: lives
+            - generic [ref=e203]: "on"
+            - generic [ref=e204]: the
+            - generic [ref=e205]: cold
+            - generic [ref=e206]: tundra.
+            - generic [ref=e207]: It
+            - generic [ref=e208]: has
+            - generic [ref=e209]: thick
+            - generic [ref=e210]: fur
+            - generic [ref=e211]: and
+            - generic [ref=e212]: a
+            - generic [ref=e213]: white
+            - generic [ref=e214]: coat
+            - generic [ref=e215]: to
+            - generic [ref=e216]: hide
+            - generic [ref=e217]: in
+            - generic [ref=e218]: the
+            - generic [ref=e219]: snow.
+          - generic [ref=e220]:
+            - button "① Listen to the English model and start this round" [ref=e221] [cursor=pointer]
+            - button "Skip the model, record now →" [ref=e226] [cursor=pointer]
+            - generic [ref=e227]: Or simply tap the picture card above
+    - complementary [ref=e228]:
+      - generic [ref=e229]:
+        - generic [ref=e230]: Round score
+        - generic [ref=e231]:
+          - text: Finish a read-aloud and you will see the score ring, three sub-scores and a word-by-word diagnosis here.
+          - generic [ref=e232]: "Current phase: Look"
+      - generic [ref=e233]:
+        - generic [ref=e234]: Word-by-word diagnosis
+        - generic [ref=e235]: Waiting for your read-aloud…
+      - generic [ref=e236]:
+        - generic [ref=e237]: Sentence frames
+        - generic [ref=e240]:
+          - generic [ref=e241]: It needs ... because ...
+          - generic [ref=e242]: It can ... so that ...
+          - generic [ref=e243]: If the habitat were ..., it would ...
+          - generic [ref=e244]: This helps it to ... when ...
+        - generic [ref=e245]: Scaffolds give you the frame, not the answer — a real information gap is what builds speaking skill.
+  - button "Expand network request log" [ref=e246] [cursor=pointer]:
+    - generic [ref=e249]: Requests
+    - generic [ref=e250]: 0 entries
